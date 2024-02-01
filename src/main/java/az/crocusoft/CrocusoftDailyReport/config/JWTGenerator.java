@@ -48,7 +48,8 @@ public class JWTGenerator {
 //    }
     public String generateAccessToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
+        String email = authentication.getName();
+        System.out.println(email);
 
         UserEntity user = userRepository.findByEmail(email);
         String roleName = user.getRole().getName();

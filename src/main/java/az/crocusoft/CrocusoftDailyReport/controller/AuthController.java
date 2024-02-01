@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
+//    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
     public ResponseEntity<String> register(@RequestBody UserRequest userRequest) {
         return userService.registerUser(userRequest);
     }

@@ -2,12 +2,16 @@ package az.crocusoft.CrocusoftDailyReport.controller;
 
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequest;
+import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
+import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
 import az.crocusoft.CrocusoftDailyReport.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.attribute.UserPrincipalNotFoundException;
@@ -22,12 +26,12 @@ public class ReportController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<DailyReport> createReport(@RequestBody ReportDto reportDTO){
-        return ResponseEntity.ok(reportService.createReport(reportDTO));
+    public ResponseEntity<DailyReportResponse> createReport(@RequestBody ReportRequestForCreate reportDTO, Authentication authentication){
+        return ResponseEntity.ok(reportService.createReport(reportDTO,authentication));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DailyReport> updateReport(@PathVariable Long id, @RequestBody String description) {
+    public ResponseEntity<DailyReportResponse> updateReport(@PathVariable Long id, @RequestBody String description) {
         return ResponseEntity.ok(reportService.updateReport(id, description));
     }
     @GetMapping("get/{id}")
@@ -41,12 +45,12 @@ public class ReportController {
             @RequestParam(required = false) LocalDate createDate,
             @RequestParam(required = false) Long projectId,
             @RequestParam(required = false) List<Long> userIds,
-            HttpServletResponse response
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int pageSize
     ) {
-        List<DailyReport> filteredReports = reportService.filterDailyReports(description, createDate, projectId, userIds);
+        Page<DailyReport> filteredReports = reportService.filterDailyReports(description, createDate, projectId, userIds, page, pageSize);
 
         if (filteredReports.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No matching reports found.");
         }
 

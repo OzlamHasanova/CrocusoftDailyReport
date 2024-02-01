@@ -41,7 +41,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .requestMatchers("v1/api/auth/**").permitAll()
                 .requestMatchers("v1/api/auth/register").hasAnyRole("SUPERADMIN","ADMIN")
-//                .requestMatchers(HttpMethod.PUT,"v1/api/reports").hasRole("EMPLOYEE")
+             //   .requestMatchers(HttpMethod.GET,"v1/api/reports/**").hasAnyAuthority("EMPLOYEE")
                 .requestMatchers(permitSwagger).permitAll()
                 .anyRequest().authenticated()
                 .and()

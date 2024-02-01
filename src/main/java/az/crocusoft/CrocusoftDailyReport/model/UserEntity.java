@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class UserEntity{
     private String email;
 
     private String password;
+    @OneToMany(mappedBy ="user" ,cascade = CascadeType.REMOVE)
+    private List<Token> tokenList;
+
 
     @ManyToOne
     @JoinColumn(name = "team_id")
@@ -45,6 +49,9 @@ public class UserEntity{
     @Enumerated(EnumType.STRING)
     private Status status;
     private Boolean isDeleted = false;
+    private String otp;
+    private LocalDateTime otpGeneratedTime;
+
 
 
 }

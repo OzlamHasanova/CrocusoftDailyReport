@@ -3,6 +3,9 @@ package az.crocusoft.CrocusoftDailyReport.service;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamMemberDto;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
+import az.crocusoft.CrocusoftDailyReport.exception.TeamHasAssociatedEmployeesException;
+import az.crocusoft.CrocusoftDailyReport.exception.TeamNotFoundException;
+import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
@@ -20,7 +23,7 @@ public class TeamService {
     @Autowired
     private UserRepository userRepository;
 
-    public Team createTeam(TeamDto teamDto) {
+    public TeamResponse createTeam(TeamDto teamDto) {
         Team team = new Team();
         team.setName(teamDto.getName());
 
@@ -33,8 +36,10 @@ public class TeamService {
 //            member.setTeam(team);
 //        }
 //        team.setMembers(members);
+        teamRepository.save(team);
+        TeamResponse teamResponse=mapToTeamResponse(team);
 
-        return teamRepository.save(team);
+        return teamResponse;
     }
 
     public List<TeamResponse> getAllTeams() {
@@ -42,12 +47,14 @@ public class TeamService {
         List<TeamResponse> teamResponseList=mapTeamsToResponses(teamList);
         return teamResponseList;
     }
-    public Team updateTeam(Long teamId, TeamDto teamDto) {
+    public TeamResponse updateTeam(Long teamId,TeamDto teamDto) {
         Team existingTeam = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found with id: " + teamId));
-
+                .orElseThrow(() -> new UpdateTimeException("Team not found with id: " + teamId));
         existingTeam.setName(teamDto.getName());
-        return teamRepository.save(existingTeam);
+        teamRepository.save(existingTeam);
+        TeamResponse teamResponse=mapToTeamResponse(existingTeam);
+
+        return teamResponse;
     }
 
     public TeamResponse getById(Long id) {
@@ -73,14 +80,31 @@ public class TeamService {
     }
     public void deleteTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Team not found with id: " + teamId));
+                .orElseThrow(() -> new TeamNotFoundException("Team not found with id: " + teamId));
 
         List<UserEntity> teamMembers = team.getMembers();
         if (teamMembers.isEmpty()) {
             teamRepository.delete(team);
         } else {
-            throw new IllegalStateException("Cannot delete the team because it has associated employees.");
+            throw new TeamHasAssociatedEmployeesException("Cannot delete the team because it has associated employees.");
         }
+    }
+    public static TeamResponse mapToTeamResponse(Team team) {
+        TeamResponse response = new TeamResponse();
+        response.setName(team.getName());
+
+        List<TeamMemberDto> memberDtos = new ArrayList<>();
+        for (UserEntity member : team.getMembers()) {
+            TeamMemberDto memberDto = new TeamMemberDto();
+            memberDto.setName(member.getName());
+            memberDto.setSurname(member.getSurname());
+            memberDto.setMail(member.getEmail());
+
+            memberDtos.add(memberDto);
+        }
+        response.setMembers(memberDtos);
+
+        return response;
     }
 
     public static List<TeamResponse> mapTeamsToResponses(List<Team> teams) {
@@ -102,7 +126,6 @@ public class TeamService {
                     memberDto.setName(member.getName());
                     memberDto.setSurname(memberDto.getSurname());
                     memberDto.setMail(memberDto.getMail());
-                    // Set other member properties as needed
                     return memberDto;
                 })
                 .collect(Collectors.toList());

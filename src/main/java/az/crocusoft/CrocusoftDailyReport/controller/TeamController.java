@@ -19,7 +19,7 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
     @PostMapping
-    public Team createTeam(@RequestBody TeamDto teamDto) {
+    public TeamResponse createTeam(@RequestBody TeamDto teamDto) {
         return teamService.createTeam(teamDto);
     }
     @GetMapping("/all")
@@ -38,8 +38,8 @@ public class TeamController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Team> updateTeam(@PathVariable("id") Long teamId, @RequestBody TeamDto teamDto) {
-        Team updatedTeam = teamService.updateTeam(teamId, teamDto);
+    public ResponseEntity<TeamResponse> updateTeam(@PathVariable("id") Long teamId, @RequestBody TeamDto teamDto) {
+        TeamResponse updatedTeam = teamService.updateTeam(teamId, teamDto);
         return ResponseEntity.ok(updatedTeam);
     }
     @DeleteMapping("/{teamId}")
