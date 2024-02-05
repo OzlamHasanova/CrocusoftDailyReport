@@ -10,15 +10,6 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BaseResponse<T> {
-    HttpStatus status;
+public class BaseResponse {
     String msg;
-    T data;
-    public static <T> BaseResponse<T> success(T data) {
-        return BaseResponse.<T>builder()
-                .status(HttpStatus.OK)
-                .data(data)
-                .msg("success")
-                .build();
-    }
 }

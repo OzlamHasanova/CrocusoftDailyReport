@@ -1,21 +1,20 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
-import az.crocusoft.CrocusoftDailyReport.dto.AuthResponseDTO;
-import az.crocusoft.CrocusoftDailyReport.dto.LoginDto;
-import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
-import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
-import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
-import az.crocusoft.CrocusoftDailyReport.model.Role;
-import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
-import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
+import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
+import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
+import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
+import az.crocusoft.CrocusoftDailyReport.service.AuthenticationService;
 import az.crocusoft.CrocusoftDailyReport.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("v1/api/auth")
@@ -24,28 +23,28 @@ import java.util.List;
 public class AuthController {
     @Autowired
     private UserService userService;
-
-
-    @PostMapping("/login")
-    @PreAuthorize("hasRole('SUPERADMIN')")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto) {
-        return userService.loginUser(loginDto);
-    }
+    private final AuthenticationService service;
 
     @PostMapping("/register")
-//    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN')")
-    public ResponseEntity<String> register(@RequestBody UserRequest userRequest) {
-        return userService.registerUser(userRequest);
+    public ResponseEntity<BaseResponse> register(
+           @Valid @RequestBody RegisterRequest request
+    ) {
+        return service.register(request);
     }
 
-//    @GetMapping("/filter")
-//    public List<UserResponseForFilter> filterUsers(
-//            @RequestParam(required = false) String name,
-//            @RequestParam(required = false) String surname,
-//            @RequestParam(required = false) List<Long> teamIds,
-//            @RequestParam(required = false) List<Long> projectIds
-//    ) {
-//        return userService.filterUsers(name, surname,  teamIds, projectIds);
-//    }
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody AuthenticationRequest request
+    ) {
+        return ResponseEntity.ok(service.authenticate(request));
+    }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        service.refreshToken(request, response);
+    }
 
 }

@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class EmailUtil {
 
-
     private final JavaMailSender javaMailSender;
-
 
     public void sendOtpEmail(String email, String otp) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

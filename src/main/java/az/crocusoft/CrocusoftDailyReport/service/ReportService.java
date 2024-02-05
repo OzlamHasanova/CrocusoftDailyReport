@@ -7,10 +7,14 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.exception.DailyReportNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
-import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.repository.ProjectRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.ReportRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,7 +41,7 @@ public class ReportService {
 
         report.setDescription(reportdto.getDescription());
         report.setCreateDate(LocalDate.now());
-        report.setProject(projectRepository.findById(reportdto.getProjectId()).get());//todo: bunu serviceden getirmelisen
+        report.setProject(projectRepository.findById(reportdto.getProjectId()).get());
         reportRepository.save(report);
         DailyReportResponse response=mapToDailyReportResponse(report);
         return response;
@@ -78,9 +83,9 @@ public class ReportService {
 
         return reportDto;
     }
-    public Page<DailyReport> filterDailyReports(String description, LocalDate createDate, Long projectId, List<Long> userIds, int page, int pageSize) {
+    public Page<DailyReport> filterDailyReports( LocalDate createDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
         Pageable pageable =  PageRequest.of(page, pageSize);
-        return reportRepository.findByFilterCriteria(description, createDate, projectId, userIds, pageable);
+        return reportRepository.findByFilterCriteria( createDate, projectIds, userIds, pageable);
 
     }
 
@@ -89,5 +94,56 @@ public class ReportService {
         response.setDescription(report.getDescription());
         response.setProjectId(report.getProject().getId());
         return response;
+    }
+    public Page<DailyReport> filterDailyReportsForAdmin( LocalDate createDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
+        Pageable pageable =  PageRequest.of(page, pageSize);
+        return reportRepository.findByFilterCriteria( createDate, projectIds, userIds, pageable);
+
+    }
+
+    public Page<DailyReport> generateDailyReportExcel(
+            HttpServletResponse httpServletResponse,
+            LocalDate creatDate,
+            List<Long> projectIds,
+            List<Long> userIds,
+            Pageable pageable) throws IOException {
+
+        Page<DailyReport> reports = reportRepository.findByFilterCriteria(
+                creatDate,
+                projectIds,
+                userIds,
+                pageable
+        );
+        HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+        HSSFSheet sheet = hssfWorkbook.createSheet("Product with Variation Info");
+        HSSFRow row = sheet.createRow(0);
+        row.createCell(0).setCellValue("Daily Report ID");
+        row.createCell(1).setCellValue("UserId");
+        row.createCell(2).setCellValue("User FirstName");
+        row.createCell(3).setCellValue("User LastName");
+        row.createCell(4).setCellValue("LocalDate");
+        row.createCell(5).setCellValue("DailyReport Description");
+        row.createCell(6).setCellValue("ProjectName");
+
+        int dataRowIndex = 1;
+
+        for (DailyReport report : reports) {
+            HSSFRow dataRow = sheet.createRow(dataRowIndex);
+            dataRow.createCell(0).setCellValue(report.getId());
+            dataRow.createCell(1).setCellValue(report.getUser().getId());
+            dataRow.createCell(2).setCellValue(report.getUser().getName());
+            dataRow.createCell(3).setCellValue(report.getUser().getSurname());
+            dataRow.createCell(4).setCellValue(report.getCreateDate());
+            dataRow.createCell(5).setCellValue(report.getDescription());
+            dataRow.createCell(6).setCellValue(report.getProject().getName());
+
+            dataRowIndex++;
+        }
+
+        ServletOutputStream outputStream = httpServletResponse.getOutputStream();
+        hssfWorkbook.write(outputStream);
+        hssfWorkbook.close();
+        outputStream.close();
+        return reports;
     }
 }

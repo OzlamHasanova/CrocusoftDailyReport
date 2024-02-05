@@ -9,6 +9,7 @@ import az.crocusoft.CrocusoftDailyReport.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class TeamController {
         List<TeamResponse> teams = teamService.getAllTeams();
         return ResponseEntity.ok(teams);
     }
-    @GetMapping("/get")
+    @GetMapping
     public ResponseEntity<TeamResponse> getById(@RequestParam Long id) {
         TeamResponse teamResponse = teamService.getById(id);
         if (teamResponse != null) {
@@ -37,7 +38,8 @@ public class TeamController {
         }
     }
 
-    @PutMapping("/update/{id}")
+
+    @PutMapping("/{id}")
     public ResponseEntity<TeamResponse> updateTeam(@PathVariable("id") Long teamId, @RequestBody TeamDto teamDto) {
         TeamResponse updatedTeam = teamService.updateTeam(teamId, teamDto);
         return ResponseEntity.ok(updatedTeam);

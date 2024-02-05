@@ -22,6 +22,9 @@ public class TeamService {
     private TeamRepository teamRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
+
 
     public TeamResponse createTeam(TeamDto teamDto) {
         Team team = new Team();
@@ -59,6 +62,7 @@ public class TeamService {
 
     public TeamResponse getById(Long id) {
         Optional<Team> teamOptional = teamRepository.findById(id);
+        authenticationService.getSignedInUser();
         if (teamOptional.isPresent()) {
             Team team = teamOptional.get();
             TeamResponse teamDto = new TeamResponse();

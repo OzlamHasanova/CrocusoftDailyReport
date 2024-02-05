@@ -29,7 +29,7 @@ public class ProjectController {
         ProjectResponse createdProject = projectService.createProject(projectDto);
         return ResponseEntity.ok(createdProject);
     }
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ProjectResponse> updateProject(@PathVariable Long id, @RequestBody ProjectDto projectDTO) {
         ProjectResponse updatedProject = projectService.updateProject(id, projectDTO);
         return ResponseEntity.ok(updatedProject);
@@ -40,9 +40,5 @@ public class ProjectController {
         List<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName);
         return ResponseEntity.ok(filteredProjects);
     }
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-//        projectService.deleteProject(id);
-//        return ResponseEntity.noContent().build();
-//    }
+
 }

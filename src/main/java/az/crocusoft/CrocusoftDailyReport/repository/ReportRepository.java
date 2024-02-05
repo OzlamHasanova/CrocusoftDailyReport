@@ -14,16 +14,27 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<DailyReport,Long> {
+//    @Query("SELECT dr FROM DailyReport dr " +
+//            "WHERE (:createDate IS NULL OR dr.createDate = :createDate) " +
+//            "AND (:projectIds IS NULL OR dr.project.Id IN (:projectIds) ) " +
+//            "AND (:userIds IS NULL OR dr.user.id IN (:userIds))")
+//    Page<DailyReport> findByFilterCriteria(
+//            @Param("createDate") LocalDate createDate,
+//            @Param("projectId") List<Long> projectIds,
+//            @Param("userIds") List<Long> userIds,
+//            Pageable pageable
+//    );
+
     @Query("SELECT dr FROM DailyReport dr " +
-            "WHERE (:description IS NULL OR dr.description LIKE %:description%) " +
-            "AND (:createDate IS NULL OR dr.createDate = :createDate) " +
-            "AND (:projectId IS NULL OR dr.project.Id = :projectId) " +
-            "AND (:userIds IS NULL OR dr.user.id IN (:userIds))")
+            "JOIN dr.user u " +
+            "WHERE (:createDate IS NULL OR dr.createDate = :createDate) " +
+            "AND (:projectIds IS NULL OR dr.project.Id IN (:projectIds)) " +
+            "AND (:userIds IS NULL OR u.id IN (:userIds))")
     Page<DailyReport> findByFilterCriteria(
-            @Param("description") String description,
             @Param("createDate") LocalDate createDate,
-            @Param("projectId") Long projectId,
+            @Param("projectIds") List<Long> projectIds,
             @Param("userIds") List<Long> userIds,
             Pageable pageable
     );
+
 }
