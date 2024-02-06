@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,20 +38,25 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
     public ResponseEntity<BaseResponse> register(RegisterRequest request) {
         String role = getSignedInUser().getRole().getName();
-                if (!role.equals("SUPERADMIN") && !role.equals("ADMIN")) {
-                    return new ResponseEntity<>(new BaseResponse("Only superadmin or admin can register users!"), HttpStatus.UNAUTHORIZED);
+        if (!role.equals("SUPERADMIN") && !role.equals("ADMIN")) {
+            logger.warn("Unauthorized registration attempt by user: {}", getSignedInUser().getEmail());
+            return new ResponseEntity<>(new BaseResponse("Only superadmin or admin can register users!"), HttpStatus.UNAUTHORIZED);
         }
-        if(request.getRole().getId()==1){
-            return new ResponseEntity<>(new BaseResponse("Nobody cannot create superadmin !"), HttpStatus.UNAUTHORIZED);
-
+        if (request.getRole().getId() == 1) {
+            logger.warn("Unauthorized attempt to create superadmin by user: {}", getSignedInUser().getEmail());
+            return new ResponseEntity<>(new BaseResponse("Nobody cannot create superadmin!"), HttpStatus.UNAUTHORIZED);
         }
-        if (role.equals("ADMIN") && request.getRole().getId()==2) {
+        if (role.equals("ADMIN") && request.getRole().getId() == 2) {
+            logger.warn("Unauthorized attempt to create admin by user: {}", getSignedInUser().getEmail());
             return new ResponseEntity<>(new BaseResponse("Admin cannot create Admin!"), HttpStatus.UNAUTHORIZED);
         }
 
         if (repository.existsByEmail(request.getEmail())) {
+            logger.warn("Username is already taken: {}", request.getEmail());
             return new ResponseEntity<>(new BaseResponse("Username is taken!"), HttpStatus.BAD_REQUEST);
         }
         var user = UserEntity.builder()
@@ -59,9 +66,10 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
-         repository.save(user);
+        repository.save(user);
 
-        return new ResponseEntity<>(new BaseResponse("Register is succeesful"),HttpStatus.CREATED);
+        logger.info("User registered successfully: {}", user.getEmail());
+        return new ResponseEntity<>(new BaseResponse("Register is successful"), HttpStatus.CREATED);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -113,7 +121,8 @@ public class AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("Invalid or missing authorization header in refresh token request");
             return;
         }
         refreshToken = authHeader.substring(7);
@@ -129,11 +138,19 @@ public class AuthenticationService {
                         .refreshToken(refreshToken)
                         .build();
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            } else {
+                logger.warn("Invalid refresh token for user: {}", userEmail);
             }
+        } else {
+            logger.warn("Failed to extract username from refresh token");
         }
     }
+
     public UserEntity getSignedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return repository
-                .findByEmail(authentication.getName());
-    }}
+        UserEntity user = repository.findByEmail(authentication.getName());
+        logger.info("Signed-in user: {}", user.getEmail());
+        return user;
+    }
+
+}

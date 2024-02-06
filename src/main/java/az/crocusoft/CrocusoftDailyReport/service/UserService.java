@@ -19,6 +19,8 @@ import az.crocusoft.CrocusoftDailyReport.util.EmailUtil;
 import az.crocusoft.CrocusoftDailyReport.util.OtpUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
@@ -45,12 +49,16 @@ public class UserService {
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
 
-
     public UserDto getById(Long id) {
+        logger.info("Getting user by id: {}", id);
+
         UserEntity userEntity = userRepository.findById(id).orElse(null);
         if (userEntity != null) {
-            return convertToDto(userEntity);
+            UserDto userDto = convertToDto(userEntity);
+            logger.info("User retrieved successfully");
+            return userDto;
         } else {
+            logger.warn("User not found with id: {}", id);
             return null;
         }
     }
@@ -65,41 +73,57 @@ public class UserService {
     }
 
     public UserDto update(Long id, UserRequest userRequest) {
-        UserEntity user=userRepository.findById(id).orElseThrow();
+        logger.info("Updating user with id: {}", id);
+
+        UserEntity user = userRepository.findById(id).orElseThrow();
         user.setName(userRequest.getName());
         user.setSurname(userRequest.getSurname());
         user.setEmail(userRequest.getEmail());
         user.setPassword(user.getPassword());
         user.setRole(roleRepository.findById(userRequest.getRoleId()).get());
-        return convertToDto(user);
 
+        UserDto userDto = convertToDto(user);
+
+        logger.info("User updated successfully");
+        return userDto;
     }
 
     public void deleteProject(Long id) {
+        logger.info("Deleting user with id: {}", id);
+
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
         user.setIsDeleted(true);
         userRepository.save(user);
+
+        logger.info("User deleted successfully");
     }
 
-
     public void updateUserPassword(Long userId, String password) {
+        logger.info("Updating password for user with id: {}", userId);
+
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         user.setPassword(passwordEncoder.encode(password));
-
         userRepository.save(user);
+
+        logger.info("User password updated successfully");
     }
 
     public void updateUserStatus(Long userId, Status status) {
+        logger.info("Updating status for user with id: {}", userId);
+
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
         user.setStatus(status);
         userRepository.save(user);
+
+        logger.info("User status updated successfully");
     }
+
     public void changeUserPassword( ChangePasswordRequest changePassword) {
         Long userId=authenticationService.getSignedInUser().getId();
         UserEntity user = userRepository.findById(userId)
@@ -180,29 +204,7 @@ public class UserService {
         return dtoList;
     }
 
-//    private void saveUserToken(UserEntity user, String jwtToken) {
-//        var token = Token.builder()
-//                .user(user)
-//                .token(jwtToken)
-////                .tokenType(TokenType.BEARER)
-//                .expired(false)
-//                .revoked(false)
-//                .build();
-//        tokenRepository.save(token);
-    }
 
+}
 
-    //todo: silinmeli olsa da ehtimala qalib
-//    public List<UserEntity> filterUsers(
-//            String name,
-//            String lastname,
-//            String username,
-//            String email,
-//            String teamName,
-//
-//            Integer roleId,
-//            Status status
-//    ) {
-//        return userRepository.filterUsers(name, lastname, username, email, teamName,  roleId, status);
-//    }
 
