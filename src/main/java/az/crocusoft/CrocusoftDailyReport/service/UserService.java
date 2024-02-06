@@ -1,10 +1,12 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
+import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ChangePasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ForgotPasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
+import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
@@ -24,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,26 +111,25 @@ public class UserService {
         }
 
     }
-    public String verifyAccount(ForgotPasswordRequest forgotPasswordRequest) {
-        UserEntity user = userRepository.findByEmail(forgotPasswordRequest.getEmail());
-               // .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        if (user.getOtp().equals(forgotPasswordRequest.getOtp()) && Duration.between(user.getOtpGeneratedTime(),
-                LocalDateTime.now()).getSeconds() < (5 * 60)) {
+    public BaseResponse verifyAccount(ForgotPasswordRequest forgotPasswordRequest) {
+        UserEntity user=authenticationService.getSignedInUser();
+        if (verifyOtp(user.getOtp()).equals(new BaseResponse("verify is success"))) {
             user.setStatus(Status.ACTIVE);
             if(Objects.equals(forgotPasswordRequest.getNewPassword(), forgotPasswordRequest.getNewPasswordAgain())){
                 user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getNewPassword()));
                 userRepository.save(user);
             }
 
-            return "OTP verified you can login";
+            return new BaseResponse("OTP verified you can login");
         }
-        return "Please regenerate otp and try again";
+        return new BaseResponse("Please regenerate otp and try again");
     }
 
     public String regenerateOtp(String email) {
         UserEntity user = userRepository.findByEmail(email);
                // .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         String otp = otpUtil.generateOtp();
+        System.out.println(otp);
         try {
             emailUtil.sendOtpEmail(email, otp);
         } catch (MessagingException e) {
@@ -148,6 +151,35 @@ public class UserService {
                 .map(user -> new UserResponseForFilter(user.getName(), user.getSurname(), user.getEmail()))
                 .collect(Collectors.toList());
     }
+
+    public BaseResponse verifyOtp(String otp) {
+        UserEntity user=authenticationService.getSignedInUser();
+        if (Objects.equals(user.getOtp(), otp) && Duration.between(user.getOtpGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (5 * 60)) {
+            user.setStatus(Status.ACTIVE);
+            return new BaseResponse("verify is success");
+        }
+        return new BaseResponse("Please regenerate otp and try again");
+    }
+
+    public List<UserResponseForGetAll> getAllUsers() {
+        List<UserEntity> userEntityList=userRepository.findAll();
+        List<UserResponseForGetAll> userResponseForGetAllList=convertToDtoList(userEntityList);
+        return userResponseForGetAllList;
+    }
+
+    public List<UserResponseForGetAll> convertToDtoList(List<UserEntity> userEntityList) {
+        List<UserResponseForGetAll> dtoList = new ArrayList<>();
+        for (UserEntity userEntity : userEntityList) {
+            UserResponseForGetAll dto = UserResponseForGetAll.builder()
+                    .fullname(userEntity.getName() + " " + userEntity.getSurname())
+                    .email(userEntity.getEmail())
+                    .build();
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
 //    private void saveUserToken(UserEntity user, String jwtToken) {
 //        var token = Token.builder()
 //                .user(user)

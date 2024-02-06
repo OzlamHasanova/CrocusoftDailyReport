@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("v1/api/team")
+@RequestMapping("v1/api/teams")
 public class TeamController {
     @Autowired
     private TeamService teamService;
@@ -23,13 +23,13 @@ public class TeamController {
     public TeamResponse createTeam(@RequestBody TeamDto teamDto) {
         return teamService.createTeam(teamDto);
     }
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams() {
         List<TeamResponse> teams = teamService.getAllTeams();
         return ResponseEntity.ok(teams);
     }
-    @GetMapping
-    public ResponseEntity<TeamResponse> getById(@RequestParam Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<TeamResponse> getById(@PathVariable("id") Long id) {
         TeamResponse teamResponse = teamService.getById(id);
         if (teamResponse != null) {
             return new ResponseEntity<>(teamResponse, HttpStatus.OK);
@@ -44,8 +44,8 @@ public class TeamController {
         TeamResponse updatedTeam = teamService.updateTeam(teamId, teamDto);
         return ResponseEntity.ok(updatedTeam);
     }
-    @DeleteMapping("/{teamId}")
-    public ResponseEntity<String> deleteTeam(@PathVariable Long teamId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTeam(@PathVariable("id") Long teamId) {
         try {
             teamService.deleteTeam(teamId);
             return ResponseEntity.ok("Team deleted successfully.");

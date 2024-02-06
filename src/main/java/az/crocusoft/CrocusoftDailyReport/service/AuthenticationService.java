@@ -78,7 +78,7 @@ public class AuthenticationService {
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
-               .id(userId)
+                .id(userId)
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -136,6 +136,4 @@ public class AuthenticationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return repository
                 .findByEmail(authentication.getName());
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
-}
+    }}

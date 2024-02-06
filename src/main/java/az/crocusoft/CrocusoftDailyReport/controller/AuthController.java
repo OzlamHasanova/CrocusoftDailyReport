@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -21,10 +22,8 @@ import java.io.IOException;
 
 @AllArgsConstructor
 public class AuthController {
-    @Autowired
-    private UserService userService;
-    private final AuthenticationService service;
 
+    private final AuthenticationService service;
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> register(
            @Valid @RequestBody RegisterRequest request

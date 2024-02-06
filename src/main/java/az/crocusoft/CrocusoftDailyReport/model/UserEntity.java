@@ -2,11 +2,9 @@ package az.crocusoft.CrocusoftDailyReport.model;
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.info.Contact;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +15,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -56,6 +55,7 @@ public class UserEntity implements UserDetails{
     private String otp;
     private LocalDateTime otpGeneratedTime;
     private RoleEnum roleEnum;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

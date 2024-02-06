@@ -30,7 +30,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("surname") String surname,
             @Param("teamIds") List<Long> teamIds,
             @Param("projectIds") List<Long> projectIds);
-    UserEntity findByEmail(String email);
+  UserEntity findByEmail(String email);
 
 //    Optional<UserEntity> findBy(String name);
 }

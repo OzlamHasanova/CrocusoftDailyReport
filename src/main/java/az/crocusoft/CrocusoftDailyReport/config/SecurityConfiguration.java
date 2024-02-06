@@ -47,12 +47,34 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers("/v1/api/auth/**").permitAll()
-//                                .requestMatchers(HttpMethod.POST,"/v1/api/auth/**").hasAnyAuthority("SUPERADMIN")
-//                                .requestMatchers(HttpMethod.POST,"/v1/api/team/**").hasAnyAuthority("SUPERADMIN")
-//                                .requestMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
-//                                .requestMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
-//                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
-//                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+                               .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/user").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/user/all").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                               .requestMatchers(HttpMethod.PUT, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.DELETE, "/v1/api/user/delete/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.PUT, "/v1/api/user/status/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.POST, "/v1/api/user/resetPassword/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.POST, "/v1/api/auth/register").hasAnyRole("SUPERADMIN","ADMIN")
+
+                               .requestMatchers(HttpMethod.POST, "/v1/api/projects").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/projects/{id}").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                               .requestMatchers(HttpMethod.PUT, "/v1/api/projects/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/projects/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+
+                               .requestMatchers(HttpMethod.POST, "/v1/api/reports").hasRole("EMPLOYEE")
+                               .requestMatchers(HttpMethod.PUT, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-admin").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                                .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-and-export-excel").hasAnyRole("SUPERADMIN","ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/v1/api/reports/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+
+                                .requestMatchers(HttpMethod.GET, "/v1/api/roles").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+
+                                .requestMatchers(HttpMethod.GET, "/v1/api/teams").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                                .requestMatchers(HttpMethod.GET, "/v1/api/teams/{id}").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                                .requestMatchers(HttpMethod.PUT, "/v1/api/teams/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/v1/api/teams/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+
                                 .anyRequest()
                                 .authenticated());
 
