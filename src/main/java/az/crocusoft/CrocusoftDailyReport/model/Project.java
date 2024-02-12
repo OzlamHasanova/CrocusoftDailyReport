@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,8 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     private String name;
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "project_user",
             joinColumns = @JoinColumn(name = "project_id"),

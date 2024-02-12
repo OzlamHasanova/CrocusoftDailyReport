@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Team {
     private Long Id;
     private String name;
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<UserEntity> members = new ArrayList<>();
 
 }

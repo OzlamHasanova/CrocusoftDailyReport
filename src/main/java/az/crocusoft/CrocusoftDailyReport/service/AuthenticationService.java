@@ -7,6 +7,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Token;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
+import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.model.enums.TokenType;
 import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.TokenRepository;
@@ -68,6 +69,8 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .team(teamRepository.findById(request.getTeamId()).get())
+                .status(Status.ACTIVE)
+                .isDeleted(Boolean.FALSE)
                 .role(request.getRole())
                 .build();
         repository.save(user);

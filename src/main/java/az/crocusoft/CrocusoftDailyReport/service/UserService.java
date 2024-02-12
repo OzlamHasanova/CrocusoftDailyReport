@@ -11,10 +11,7 @@ import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
-import az.crocusoft.CrocusoftDailyReport.repository.RoleRepository;
-import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
-import az.crocusoft.CrocusoftDailyReport.repository.TokenRepository;
-import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
+import az.crocusoft.CrocusoftDailyReport.repository.*;
 import az.crocusoft.CrocusoftDailyReport.util.EmailUtil;
 import az.crocusoft.CrocusoftDailyReport.util.OtpUtil;
 import jakarta.mail.MessagingException;
@@ -42,17 +39,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private final AuthenticationManager authenticationManager;
     private final TeamRepository teamRepository;
-    private final TokenRepository tokenRepository;
+    private final ProjectRepository projectRepository;
     private final EmailUtil emailUtil;
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
 
+
     public UserDto getById(Long id) {
         logger.info("Getting user by id: {}", id);
 
-        UserEntity userEntity = userRepository.findById(id).orElse(null);
+        Optional<UserEntity> user = userRepository.findById(id);
+        UserEntity userEntity=user.get();
         if (userEntity != null) {
             UserDto userDto = convertToDto(userEntity);
             logger.info("User retrieved successfully");
@@ -65,9 +63,11 @@ public class UserService {
 
     private UserDto convertToDto(UserEntity userEntity) {
         UserDto userDto = new UserDto();
-        userDto.setPassword(userEntity.getPassword());
-        userDto.setRole(roleRepository.findById(userEntity.getRole().getId()).get());
-        userDto.setTeam(teamRepository.findById(userEntity.getTeam().getId()).get());
+        userDto.setName(userEntity.getName());
+        userDto.setSurname(userEntity.getSurname());
+        userDto.setRole(userEntity.getRole());
+        userDto.setTeam(userEntity.getTeam());
+        userDto.setProject(userEntity.getProjects());
         userDto.setStatus(userEntity.getStatus().toString());
         return userDto;
     }
@@ -81,6 +81,7 @@ public class UserService {
         user.setEmail(userRequest.getEmail());
         user.setPassword(user.getPassword());
         user.setRole(roleRepository.findById(userRequest.getRoleId()).get());
+
 
         UserDto userDto = convertToDto(user);
 

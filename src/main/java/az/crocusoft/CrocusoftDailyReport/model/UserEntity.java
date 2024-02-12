@@ -1,7 +1,10 @@
 package az.crocusoft.CrocusoftDailyReport.model;
+
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +22,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity implements UserDetails{
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,18 +32,21 @@ public class UserEntity implements UserDetails{
     private String email;
 
     private String password;
-    @OneToMany(mappedBy ="user" ,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Token> tokenList;
 
 
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @JsonIgnore
     private Team team;
 
-    @ManyToMany
-    @JoinTable(name = "user_project",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id"))
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users",
+            cascade = {CascadeType.DETACH, CascadeType.MERGE,
+                    CascadeType.PERSIST, CascadeType.REFRESH})
+//    @JoinTable(name = "user_project",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "project_id"))
     @JsonIgnore
     private List<Project> projects;
 
@@ -58,8 +64,9 @@ public class UserEntity implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+role.getName()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
     }
+
     @Override
     public String getPassword() {
         return password;

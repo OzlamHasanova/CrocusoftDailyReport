@@ -22,14 +22,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping
-    public ResponseEntity<UserDto> getById(@RequestParam Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getById(@PathVariable("id") Long id) {
         UserDto user = userService.getById(id);
         if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return ResponseEntity.ok(user);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+
     }
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseForGetAll>> getAllUsers() {
