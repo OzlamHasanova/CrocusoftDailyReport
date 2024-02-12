@@ -88,7 +88,7 @@ public class UserService {
         return userDto;
     }
 
-    public void deleteProject(Long id) {
+    public BaseResponse delete(Long id) {
         logger.info("Deleting user with id: {}", id);
 
         UserEntity user = userRepository.findById(id)
@@ -98,6 +98,7 @@ public class UserService {
         userRepository.save(user);
 
         logger.info("User deleted successfully");
+        return new BaseResponse("User deleted successfully");
     }
 
     public void updateUserPassword(Long userId, String password) {
@@ -196,6 +197,7 @@ public class UserService {
         List<UserResponseForGetAll> dtoList = new ArrayList<>();
         for (UserEntity userEntity : userEntityList) {
             UserResponseForGetAll dto = UserResponseForGetAll.builder()
+                    .userId(userEntity.getId())
                     .fullname(userEntity.getName() + " " + userEntity.getSurname())
                     .email(userEntity.getEmail())
                     .build();

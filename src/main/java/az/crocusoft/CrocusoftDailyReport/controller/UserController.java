@@ -56,9 +56,9 @@ public class UserController {
         return ResponseEntity.ok(filteredUsers);
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
-        userService.deleteProject(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<BaseResponse> delete(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.ok().build();
     }
     @PutMapping("/status/{id}")
     public ResponseEntity<Void> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {

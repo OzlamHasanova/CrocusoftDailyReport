@@ -29,7 +29,6 @@ public class ProjectService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
-
     public ProjectResponse getById(Long id) {
         Optional<Project> optionalProject = projectRepository.findById(id);
         Project project = optionalProject.orElseThrow(() -> {

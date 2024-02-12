@@ -96,8 +96,7 @@ public class AuthenticationService {
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
                     .build();
-        }catch (UserNotFoundException exception){
-            System.out.println("ddddd");
+        }catch (Exception exception){
             throw new UserNotFoundException("User or password is wrong"+exception.getMessage());
         }
 

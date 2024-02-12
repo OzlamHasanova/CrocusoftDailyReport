@@ -5,6 +5,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.service.ProjectService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/projects")
+@RequiredArgsConstructor
 public class ProjectController {
-    @Autowired
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ProjectResponse> getById(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
