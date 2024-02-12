@@ -1,15 +1,15 @@
 package az.crocusoft.CrocusoftDailyReport.dto.response;
 
 import az.crocusoft.CrocusoftDailyReport.dto.TeamMemberDto;
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class TeamResponse {
+    @JsonProperty("team_id")
+    private Long teamId;
     private String name;
     private List<TeamMemberDto> members;
 }

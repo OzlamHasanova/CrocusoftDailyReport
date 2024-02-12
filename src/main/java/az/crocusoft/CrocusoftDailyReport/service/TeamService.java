@@ -131,6 +131,7 @@ public class TeamService {
         return teams.stream()
                 .map(team -> {
                     TeamResponse teamResponse = new TeamResponse();
+                    teamResponse.setTeamId(team.getId());
                     teamResponse.setName(team.getName());
                     teamResponse.setMembers(mapMembersToDtos(team.getMembers()));
                     return teamResponse;
