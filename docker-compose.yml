@@ -1,0 +1,29 @@
+#version: '3.1.1'
+#services:
+#  dailyreport_service_provider:
+#    container_name: dailyreport_service
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/crm
+#      - SPRING_DATASOURCE_USERNAME=root
+#      - SPRING_DATASOURCE_PASSWORD=ozlam2002
+#    ports:
+#      - "8081:8081"
+#    restart: unless-stopped
+#  mysql_provider_dailyreport:
+#    image: mysql:latest
+#    container_name: mysql_provider_dailyreport
+#    ports:
+#      - "5434:5432"
+##    volumes:
+##      - db_provider_management_service:/var/lib/mysql/data
+#    restart: unless-stopped
+#    environment:
+#      - MYSQL_DB=mysql
+#      - MYSQL_USER=root
+#      - MYSQL_PASSWORD=ozlam2002
+#volumes:
+#  db_provider_management_service:
+#    driver: local

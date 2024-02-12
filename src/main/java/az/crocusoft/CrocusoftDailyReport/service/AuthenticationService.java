@@ -4,9 +4,11 @@ import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
+import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Token;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.TokenType;
+import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.TokenRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +39,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final TeamRepository  teamRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
@@ -64,6 +67,7 @@ public class AuthenticationService {
                 .surname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .team(teamRepository.findById(request.getTeamId()).get())
                 .role(request.getRole())
                 .build();
         repository.save(user);
@@ -73,23 +77,30 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = repository.findByEmail(request.getEmail());
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        Long userId = repository.findByEmail(request.getEmail()).getId();
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        return AuthenticationResponse.builder()
-                .id(userId)
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+            var user = repository.findByEmail(request.getEmail());
+
+            var jwtToken = jwtService.generateToken(user);
+            var refreshToken = jwtService.generateRefreshToken(user);
+            Long userId = repository.findByEmail(request.getEmail()).getId();
+            revokeAllUserTokens(user);
+            saveUserToken(user, jwtToken);
+            return AuthenticationResponse.builder()
+                    .id(userId)
+                    .accessToken(jwtToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }catch (UserNotFoundException exception){
+            System.out.println("ddddd");
+            throw new UserNotFoundException("User or password is wrong"+exception.getMessage());
+        }
+
     }
 
     private void saveUserToken(UserEntity user, String jwtToken) {

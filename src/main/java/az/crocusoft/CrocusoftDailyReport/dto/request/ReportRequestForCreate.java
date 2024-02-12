@@ -6,7 +6,7 @@ import javax.print.DocFlavor;
 
 @Data
 public class ReportRequestForCreate {
-    private Long id;
+//    private Long id;
     private String description;
     private Long projectId;
 }

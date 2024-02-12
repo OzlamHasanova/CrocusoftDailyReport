@@ -36,6 +36,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
 
@@ -44,7 +45,7 @@ public class ReportService {
         logger.info("Creating report");
 
         DailyReport report = new DailyReport();
-        report.setUser(userRepository.findById(reportdto.getId()).get());
+        report.setUser(authenticationService.getSignedInUser());
         report.setDescription(reportdto.getDescription());
         report.setCreateDate(LocalDate.now());
         report.setProject(projectRepository.findById(reportdto.getProjectId()).get());

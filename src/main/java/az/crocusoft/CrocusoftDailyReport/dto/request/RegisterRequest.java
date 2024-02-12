@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.dto.request;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -32,6 +33,8 @@ public class RegisterRequest {
 
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
+    @JsonProperty("team_id")
+    private Long teamId;
 
 
     private Role role;
