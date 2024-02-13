@@ -45,17 +45,27 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
+        boolean isRoleDataInitialized = false;
+
+        // Check if role data is already initialized
+        if (roleRepository.count() == 0) {
+            isRoleDataInitialized = true;
+        }
+
+        if (isRoleDataInitialized) {
             for (RoleEnum roleName : RoleEnum.values()) {
                 if (!roleRepository.existsByRoleEnum(roleName)) {
-                    Role rolee = new Role();
-                    rolee.setRoleEnum(roleName);
-                    roleRepository.save(rolee);
+                    Role role = new Role();
+                    role.setRoleEnum(roleName);
+                    roleRepository.save(role);
                 }
             }
+        }
 
-        Role role = roleRepository.findById(1).orElseThrow(() -> new RuntimeException("Role not found."));
-        role = entityManager.merge(role);
-
+        if (isRoleDataInitialized) {
+            Role role = roleRepository.findById(1)
+                    .orElseThrow(() -> new RuntimeException("Role not found."));
+            role = entityManager.merge(role);
 
             UserEntity superAdmin = UserEntity.builder()
                     .email("admin")
@@ -65,7 +75,7 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
                     .build();
 
             userRepository.save(superAdmin);
-
+        }
     }
 
 }
