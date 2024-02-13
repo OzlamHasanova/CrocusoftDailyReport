@@ -20,7 +20,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id)  {
         ProjectResponse projectResponse = projectService.getById(id);
         return ResponseEntity.ok(projectResponse);
     }

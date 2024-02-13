@@ -69,6 +69,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .team(teamRepository.findById(request.getTeamId()).get())
+                .roleEnum(request.getRole().getRoleEnum())
                 .status(Status.ACTIVE)
                 .isDeleted(Boolean.FALSE)
                 .role(request.getRole())
