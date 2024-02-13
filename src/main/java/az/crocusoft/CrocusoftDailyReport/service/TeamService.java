@@ -139,8 +139,8 @@ public class TeamService {
                 .map(member -> {
                     TeamMemberDto memberDto = new TeamMemberDto();
                     memberDto.setName(member.getName());
-                    memberDto.setSurname(memberDto.getSurname());
-                    memberDto.setMail(memberDto.getMail());
+                    memberDto.setSurname(member.getSurname());
+                    memberDto.setMail(member.getEmail());
                     return memberDto;
                 })
                 .collect(Collectors.toList());

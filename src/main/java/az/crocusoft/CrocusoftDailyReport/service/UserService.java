@@ -115,17 +115,16 @@ public class UserService {
         return userDto;
     }
 
-    public BaseResponse delete(Long id) {
+    public void delete(Long id) {
         logger.info("Deleting user with id: {}", id);
 
-        UserEntity user = userRepository.findById(id)
+        UserEntity user = userRepository.findByIdAndStatus(id,Status.ACTIVE)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
         user.setIsDeleted(true);
         userRepository.save(user);
 
         logger.info("User deleted successfully");
-        return new BaseResponse("User deleted successfully");
     }
 
     public void updateUserPassword(Long userId, String password) {
@@ -215,7 +214,7 @@ public class UserService {
     }
 
     public List<UserResponseForGetAll> getAllUsers() {
-        List<UserEntity> userEntityList=userRepository.findAll();
+        List<UserEntity> userEntityList=userRepository.findAllByIsDeleted(true);
         List<UserResponseForGetAll> userResponseForGetAllList=convertToDtoList(userEntityList);
         return userResponseForGetAllList;
     }
