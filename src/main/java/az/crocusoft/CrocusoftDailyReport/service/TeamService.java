@@ -3,17 +3,16 @@ package az.crocusoft.CrocusoftDailyReport.service;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamMemberDto;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponseForGet;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamHasAssociatedEmployeesException;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
-import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,17 +27,13 @@ public class TeamService {
 
     private final AuthenticationService authenticationService;
 
-    public TeamResponse createTeam(TeamDto teamDto) {
+    public void createTeam(String teamName) {
         logger.info("Creating team");
 
         Team team = new Team();
-        team.setName(teamDto.getName());
+        team.setName(teamName);
         teamRepository.save(team);
-
-        TeamResponse teamResponse = mapToTeamResponse(team);
-
         logger.info("Team created successfully");
-        return teamResponse;
     }
 
     public List<TeamResponse> getAllTeams() {
@@ -65,7 +60,7 @@ public class TeamService {
         return teamResponse;
     }
 
-    public TeamResponse getById(Long id) {
+    public TeamResponseForGet getById(Long id) {
         logger.info("Getting team by id: {}", id);
 
         Optional<Team> teamOptional = teamRepository.findById(id);
@@ -73,8 +68,8 @@ public class TeamService {
 
         if (teamOptional.isPresent()) {
             Team team = teamOptional.get();
-            TeamResponse teamDto = new TeamResponse();
-            teamDto.setName(team.getName());
+            TeamResponseForGet teamResponse = new TeamResponseForGet();
+            teamResponse.setName(team.getName());
 
             List<TeamMemberDto> memberDtos = new ArrayList<>();
             for (UserEntity member : team.getMembers()) {
@@ -84,10 +79,10 @@ public class TeamService {
                 memberDto.setMail(member.getEmail());
                 memberDtos.add(memberDto);
             }
-            teamDto.setMembers(memberDtos);
+            teamResponse.setMembers(memberDtos);
 
             logger.info("Team retrieved successfully");
-            return teamDto;
+            return teamResponse;
         }
 
         logger.warn("Team not found with id: {}", id);

@@ -8,5 +8,5 @@ import java.util.List;
 public class TeamDto {
     private Long Id;
     private String name;
-//    private List<Long> memberIds;
+
 }
