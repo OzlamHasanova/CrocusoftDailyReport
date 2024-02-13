@@ -214,7 +214,7 @@ public class UserService {
     }
 
     public List<UserResponseForGetAll> getAllUsers() {
-        List<UserEntity> userEntityList=userRepository.findAllByIsDeleted(true);
+        List<UserEntity> userEntityList=userRepository.findAllByIsDeleted(false);
         List<UserResponseForGetAll> userResponseForGetAllList=convertToDtoList(userEntityList);
         return userResponseForGetAllList;
     }
