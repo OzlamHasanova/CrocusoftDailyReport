@@ -2,6 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.controller;
 
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponseWithData;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ChangePasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ForgotPasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
@@ -43,9 +44,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BaseResponse> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
-         userService.update(id, userRequest);
-        return ResponseEntity.ok(new BaseResponse("User update is successfully"));
+    public ResponseEntity<BaseResponseWithData> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+         UserDto userDto=userService.update(id, userRequest);
+        return ResponseEntity.ok(new BaseResponseWithData("User update is successfully",userDto));
     }
     @GetMapping("/filter")
     public ResponseEntity<List<UserResponseForFilter>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,

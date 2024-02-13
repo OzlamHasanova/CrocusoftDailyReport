@@ -99,7 +99,7 @@ public class UserService {
         return projectDtoList;
     }
 
-    public void update(Long id, UserRequest userRequest) {
+    public UserDto update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
 
         UserEntity user = userRepository.findById(id).orElseThrow();
@@ -108,10 +108,11 @@ public class UserService {
         user.setEmail(userRequest.getEmail());
         user.setRole(roleRepository.findById(userRequest.getRoleId()).orElseThrow());
 
-        userRepository.save(user);
+        UserEntity updatedUser = userRepository.save(user);
+        UserDto userDto = convertToDto(updatedUser);
 
         logger.info("User updated successfully");
-
+        return userDto;
     }
 
     public BaseResponse delete(Long id) {
