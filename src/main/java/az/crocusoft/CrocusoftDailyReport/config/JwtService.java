@@ -70,7 +70,7 @@ public class JwtService {
         System.out.println(email);
 
         UserEntity user = userRepository.findByEmail(email);
-        String roleName = user.getRole().getName();
+        String roleName = user.getRole().getRoleEnum().name();
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

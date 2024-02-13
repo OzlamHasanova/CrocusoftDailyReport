@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.model;
 
+import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +20,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-
+    @Enumerated(EnumType.STRING)
+    private RoleEnum roleEnum;
 
 }

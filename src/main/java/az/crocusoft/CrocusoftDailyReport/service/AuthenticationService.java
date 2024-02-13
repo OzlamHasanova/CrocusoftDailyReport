@@ -45,7 +45,7 @@ public class AuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public ResponseEntity<BaseResponse> register(RegisterRequest request) {
-        String role = getSignedInUser().getRole().getName();
+        String role = getSignedInUser().getRole().getRoleEnum().name();
         if (!role.equals("SUPERADMIN") && !role.equals("ADMIN")) {
             logger.warn("Unauthorized registration attempt by user: {}", getSignedInUser().getEmail());
             return new ResponseEntity<>(new BaseResponse("Only superadmin or admin can register users!"), HttpStatus.UNAUTHORIZED);

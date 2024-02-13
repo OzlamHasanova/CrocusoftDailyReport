@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 
-public class SuperAdminInitializer implements CommandLineRunner {
+public class RoleAndSuperAdminInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     @Autowired
@@ -25,19 +25,38 @@ public class SuperAdminInitializer implements CommandLineRunner {
     private EntityManager entityManager;
 
 
-    public SuperAdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public RoleAndSuperAdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+//    @Override
+//    public void run(String... args) throws Exception {
+//        for (RoleEnum roleName : RoleEnum.values()) {
+//            if (!roleRepository.existsByRoleEnum(roleName)) {
+//                Role role = new Role();
+//                role.setRoleEnum(roleName);
+//                roleRepository.save(role);
+//            }
+//        }
+//    }
 
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
+            for (RoleEnum roleName : RoleEnum.values()) {
+                if (!roleRepository.existsByRoleEnum(roleName)) {
+                    Role rolee = new Role();
+                    rolee.setRoleEnum(roleName);
+                    roleRepository.save(rolee);
+                }
+            }
+
         Role role = roleRepository.findById(1).orElseThrow(() -> new RuntimeException("Role not found."));
         role = entityManager.merge(role);
 
-        if (!userRepository.existsByRole(role)) {
+
             UserEntity superAdmin = UserEntity.builder()
                     .email("admin")
                     .password(passwordEncoder.encode("superadminpassword"))
@@ -46,9 +65,7 @@ public class SuperAdminInitializer implements CommandLineRunner {
                     .build();
 
             userRepository.save(superAdmin);
-        } else {
-            System.out.println("Super_ADMIN user already exist.");
-        }
+
     }
 
 }

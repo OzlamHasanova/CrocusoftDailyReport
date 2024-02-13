@@ -59,12 +59,13 @@ public class UserEntity implements UserDetails {
     private Boolean isDeleted = false;
     private String otp;
     private LocalDateTime otpGeneratedTime;
+    @Enumerated(EnumType.STRING)
     private RoleEnum roleEnum;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roleEnum.name()));
     }
 
     @Override

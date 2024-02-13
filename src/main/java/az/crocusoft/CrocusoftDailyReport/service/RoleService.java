@@ -25,7 +25,7 @@ public class RoleService {
                 .map(role -> {
                     RoleResponse roleResponse = new RoleResponse();
                     roleResponse.setId(role.getId());
-                    roleResponse.setName(role.getName());
+                    roleResponse.setName(role.getRoleEnum().name());
                     return roleResponse;
                 })
                 .collect(Collectors.toList());
