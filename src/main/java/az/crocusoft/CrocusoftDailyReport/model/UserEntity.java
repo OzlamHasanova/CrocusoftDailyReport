@@ -97,5 +97,4 @@ public class UserEntity implements UserDetails {
         return true;
     }
 
-
 }

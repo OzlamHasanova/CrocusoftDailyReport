@@ -20,7 +20,6 @@ public class Team {
     private Long Id;
     private String name;
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<UserEntity> members = new ArrayList<>();
 
 }

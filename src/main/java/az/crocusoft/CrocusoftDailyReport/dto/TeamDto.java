@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class TeamDto {
+    private Long Id;
     private String name;
 //    private List<Long> memberIds;
 }

@@ -43,9 +43,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
-        UserDto updateUser = userService.update(id, userRequest);
-        return ResponseEntity.ok(updateUser);
+    public ResponseEntity<BaseResponse> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
+         userService.update(id, userRequest);
+        return ResponseEntity.ok(new BaseResponse("User update is successfully"));
     }
     @GetMapping("/filter")
     public ResponseEntity<List<UserResponseForFilter>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,

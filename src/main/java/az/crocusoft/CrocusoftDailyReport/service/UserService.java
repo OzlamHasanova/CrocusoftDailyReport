@@ -1,14 +1,18 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 
+import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ChangePasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ForgotPasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
+import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
+import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.repository.*;
@@ -45,12 +49,11 @@ public class UserService {
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
 
-
     public UserDto getById(Long id) {
         logger.info("Getting user by id: {}", id);
 
         Optional<UserEntity> user = userRepository.findById(id);
-        UserEntity userEntity=user.get();
+        UserEntity userEntity = user.orElse(null);
         if (userEntity != null) {
             UserDto userDto = convertToDto(userEntity);
             logger.info("User retrieved successfully");
@@ -66,27 +69,49 @@ public class UserService {
         userDto.setName(userEntity.getName());
         userDto.setSurname(userEntity.getSurname());
         userDto.setRole(userEntity.getRole());
-        userDto.setTeam(userEntity.getTeam());
-        userDto.setProject(userEntity.getProjects());
+        userDto.setTeam(convertToTeamDto(userEntity.getTeam()));
+        userDto.setProject(convertToProjectDtoList(userEntity.getProjects()));
         userDto.setStatus(userEntity.getStatus().toString());
         return userDto;
     }
 
-    public UserDto update(Long id, UserRequest userRequest) {
+    private TeamDto convertToTeamDto(Team team) {
+        if (team == null) {
+            return null;
+        }
+        TeamDto teamDto = new TeamDto();
+        teamDto.setId(team.getId());
+        teamDto.setName(team.getName());
+        return teamDto;
+    }
+
+    private List<ProjectDtoForGetApi> convertToProjectDtoList(List<Project> projects) {
+        if (projects == null) {
+            return null;
+        }
+        List<ProjectDtoForGetApi> projectDtoList = new ArrayList<>();
+        for (Project project : projects) {
+            ProjectDtoForGetApi projectDto = new ProjectDtoForGetApi();
+            projectDto.setId(project.getId());
+            projectDto.setName(project.getName());
+            projectDtoList.add(projectDto);
+        }
+        return projectDtoList;
+    }
+
+    public void update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
 
         UserEntity user = userRepository.findById(id).orElseThrow();
         user.setName(userRequest.getName());
         user.setSurname(userRequest.getSurname());
         user.setEmail(userRequest.getEmail());
-        user.setPassword(user.getPassword());
-        user.setRole(roleRepository.findById(userRequest.getRoleId()).get());
+        user.setRole(roleRepository.findById(userRequest.getRoleId()).orElseThrow());
 
-
-        UserDto userDto = convertToDto(user);
+        userRepository.save(user);
 
         logger.info("User updated successfully");
-        return userDto;
+
     }
 
     public BaseResponse delete(Long id) {

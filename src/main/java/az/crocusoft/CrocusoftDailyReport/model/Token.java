@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.model;
 import az.crocusoft.CrocusoftDailyReport.model.enums.TokenType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,5 +36,6 @@ public class Token {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     public UserEntity user;
 }
