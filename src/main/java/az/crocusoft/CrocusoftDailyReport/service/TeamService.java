@@ -2,6 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.service;
 
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamMemberDto;
+import az.crocusoft.CrocusoftDailyReport.dto.request.TeamRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponseForGet;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamHasAssociatedEmployeesException;
@@ -27,11 +28,11 @@ public class TeamService {
 
     private final AuthenticationService authenticationService;
 
-    public void createTeam(String teamName) {
+    public void createTeam(TeamRequest teamRequest) {
         logger.info("Creating team");
 
         Team team = new Team();
-        team.setName(teamName);
+        team.setName(teamRequest.getTeamName());
         teamRepository.save(team);
         logger.info("Team created successfully");
     }

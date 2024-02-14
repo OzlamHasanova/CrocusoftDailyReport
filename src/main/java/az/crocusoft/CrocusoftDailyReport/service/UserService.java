@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,7 +182,7 @@ public class UserService {
         UserEntity user = userRepository.findByEmail(email);
                // .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         String otp = otpUtil.generateOtp();
-        System.out.println(otp);
+
         try {
             emailUtil.sendOtpEmail(email, otp);
         } catch (MessagingException e) {
@@ -192,9 +194,28 @@ public class UserService {
         return "Email sent... please verify account within 5 minute";
     }
 
-    public List<UserResponseForFilter> filterUsers(String name, String surname,List<Long> teamIds, List<Long> projectIds ) {
-        List<UserEntity> filteredUsers = userRepository.filterUsers(name, surname,teamIds, projectIds );
-        return mapToUserResponseDTOs(filteredUsers);
+    public List<UserResponseForFilter> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds) {
+        List<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds);
+        List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
+
+        String currentUsername = authenticationService.getSignedInUser().getEmail();
+
+        for (UserEntity user : filteredUsers) {
+            if (user.getUsername().equals(currentUsername) || !hasRestrictedRole(user.getRole())) {
+                filteredAndCurrentUser.add(user);
+            }
+        }
+
+        return mapToUserResponseDTOs(filteredAndCurrentUser);
+    }
+
+    private boolean hasRestrictedRole(Role role) {
+        if (role == null) {
+            return false;
+        }
+
+        String roleName = role.getRoleEnum().name();
+        return roleName.equals("ADMIN") || roleName.equals("SUPERADMIN") || roleName.equals("HEAD");
     }
 
     private List<UserResponseForFilter> mapToUserResponseDTOs(List<UserEntity> users) {

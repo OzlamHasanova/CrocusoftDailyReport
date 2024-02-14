@@ -2,6 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.controller;
 
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponseWithData;
+import az.crocusoft.CrocusoftDailyReport.dto.request.TeamRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponseForGet;
 import az.crocusoft.CrocusoftDailyReport.service.TeamService;
@@ -18,9 +19,9 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
     @PostMapping
-    public ResponseEntity<BaseResponseWithData<String>> createTeam(@RequestParam String teamName) {
-        teamService.createTeam(teamName);
-        return ResponseEntity.ok(new BaseResponseWithData<>("create is succeesfuly",teamName));
+    public ResponseEntity<BaseResponseWithData<TeamRequest>> createTeam(@RequestBody TeamRequest teamRequest) {
+        teamService.createTeam(teamRequest);
+        return ResponseEntity.ok(new BaseResponseWithData<>("create is succeesfuly",teamRequest));
     }
     @GetMapping
     public ResponseEntity<List<TeamResponse>> getAllTeams() {
