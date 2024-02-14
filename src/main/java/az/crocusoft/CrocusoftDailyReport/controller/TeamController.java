@@ -6,6 +6,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.request.TeamRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponseForGet;
 import az.crocusoft.CrocusoftDailyReport.service.TeamService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/teams")
+@RequiredArgsConstructor
 public class TeamController {
-    @Autowired
-    private TeamService teamService;
+
+    private final TeamService teamService;
     @PostMapping
     public ResponseEntity<BaseResponseWithData<TeamRequest>> createTeam(@RequestBody TeamRequest teamRequest) {
         teamService.createTeam(teamRequest);
@@ -40,8 +42,8 @@ public class TeamController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<TeamResponse> updateTeam(@PathVariable("id") Long teamId, @RequestBody TeamDto teamDto) {
-        TeamResponse updatedTeam = teamService.updateTeam(teamId, teamDto);
+    public ResponseEntity<TeamResponse> updateTeam(@PathVariable("id") Long teamId, @RequestBody TeamRequest teamRequest) {
+        TeamResponse updatedTeam = teamService.updateTeam(teamId, teamRequest);
         return ResponseEntity.ok(updatedTeam);
     }
     @DeleteMapping("/{id}")

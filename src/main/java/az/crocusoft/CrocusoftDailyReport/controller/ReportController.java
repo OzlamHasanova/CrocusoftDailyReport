@@ -1,6 +1,7 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
+import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
@@ -30,12 +31,13 @@ public class ReportController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<DailyReportResponse> createReport(@RequestBody ReportRequestForCreate reportDTO, Authentication authentication){
-        return ResponseEntity.ok(reportService.createReport(reportDTO,authentication));
+    public ResponseEntity<DailyReportResponse> createReport(@RequestBody ReportRequestForCreate reportDTO){
+        DailyReportResponse response=reportService.createReport(reportDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DailyReportResponse> updateReport(@PathVariable Long id, @RequestBody String description) {
+    public ResponseEntity<DailyReportResponse> updateReport(@PathVariable Long id, @RequestBody ReportUpdateDto description) {
         return ResponseEntity.ok(reportService.updateReport(id, description));
     }
     @GetMapping("/{id}")

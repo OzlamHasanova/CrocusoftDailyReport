@@ -47,12 +47,12 @@ public class TeamService {
         return teamResponseList;
     }
 
-    public TeamResponse updateTeam(Long teamId, TeamDto teamDto) {
+    public TeamResponse updateTeam(Long teamId, TeamRequest teamRequest) {
         logger.info("Updating team with id: {}", teamId);
 
         Team existingTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new UpdateTimeException("Team not found with id: " + teamId));
-        existingTeam.setName(teamDto.getName());
+        existingTeam.setName(teamRequest.getTeamName());
         teamRepository.save(existingTeam);
 
         TeamResponse teamResponse = mapToTeamResponse(existingTeam);

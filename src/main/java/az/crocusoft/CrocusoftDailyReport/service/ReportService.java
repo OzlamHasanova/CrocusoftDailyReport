@@ -2,6 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.service;
 
 
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
+import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.exception.DailyReportNotFoundException;
@@ -41,7 +42,7 @@ public class ReportService {
 
 
 
-    public DailyReportResponse createReport(ReportRequestForCreate reportdto, Authentication authentication) {
+    public DailyReportResponse createReport(ReportRequestForCreate reportdto) {
         logger.info("Creating report");
 
         DailyReport report = new DailyReport();
@@ -57,7 +58,7 @@ public class ReportService {
         return response;
     }
 
-    public DailyReportResponse updateReport(Long id, String description) {
+    public DailyReportResponse updateReport(Long id, ReportUpdateDto description) {
         logger.info("Updating report with id: {}", id);
 
         DailyReport existingReport = reportRepository.findById(id)
@@ -68,7 +69,7 @@ public class ReportService {
             throw new UpdateTimeException("The report's creation date cannot be updated.");
         }
 
-        existingReport.setDescription(description);
+        existingReport.setDescription(description.getDescription());
         reportRepository.save(existingReport);
 
         DailyReportResponse response = mapToDailyReportResponse(existingReport);
