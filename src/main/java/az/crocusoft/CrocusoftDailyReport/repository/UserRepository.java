@@ -16,7 +16,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Boolean existsByEmail(String email);
 
     @Query("SELECT u FROM UserEntity u " +
-            "WHERE (:name IS NULL OR u.name = :name) " +
+            "WHERE u.isDeleted = false " +
+            "AND (:name IS NULL OR u.name = :name) " +
             "AND (:surname IS NULL OR u.surname = :surname) " +
             "AND (:teamIds IS NULL OR u.team.Id IN :teamIds) " +
             "AND (:projectIds IS NULL OR EXISTS (SELECT p FROM u.projects p WHERE p.Id IN :projectIds))")
@@ -25,6 +26,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("surname") String surname,
             @Param("teamIds") List<Long> teamIds,
             @Param("projectIds") List<Long> projectIds);
+
   UserEntity findByEmail(String email);
 
     Optional<UserEntity> findByIdAndStatus(Long id,Status status);

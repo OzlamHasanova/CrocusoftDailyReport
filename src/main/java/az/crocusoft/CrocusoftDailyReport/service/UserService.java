@@ -14,6 +14,7 @@ import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
+import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.repository.*;
 import az.crocusoft.CrocusoftDailyReport.util.EmailUtil;
@@ -45,8 +46,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private final TeamRepository teamRepository;
-    private final ProjectRepository projectRepository;
     private final EmailUtil emailUtil;
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
@@ -199,16 +198,26 @@ public class UserService {
         List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
 
         String currentUsername = authenticationService.getSignedInUser().getEmail();
+        boolean isAdmin = false;
+        boolean isSuperAdminOrHead = false;
+
+        UserEntity currentUser = authenticationService.getSignedInUser();
+        if (currentUser != null && currentUser.getRole() != null) {
+            RoleEnum userRole = currentUser.getRole().getRoleEnum();
+            isAdmin = userRole == RoleEnum.ADMIN;
+            isSuperAdminOrHead = userRole == RoleEnum.SUPERADMIN || userRole == RoleEnum.HEAD;
+        }
 
         for (UserEntity user : filteredUsers) {
-            if (user.getUsername().equals(currentUsername) || !hasRestrictedRole(user.getRole())) {
+
+            if (isAdmin && !hasRestrictedRole(user.getRole()) || isSuperAdminOrHead || user.getUsername().equals(currentUsername)) {
                 filteredAndCurrentUser.add(user);
             }
         }
 
+
         return mapToUserResponseDTOs(filteredAndCurrentUser);
     }
-
     private boolean hasRestrictedRole(Role role) {
         if (role == null) {
             return false;
