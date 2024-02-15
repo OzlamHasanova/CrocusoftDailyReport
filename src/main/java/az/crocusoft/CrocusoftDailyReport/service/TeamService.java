@@ -31,6 +31,9 @@ public class TeamService {
 
     public void createTeam(TeamRequest teamRequest) {
         logger.info("Creating team");
+        if (teamRequest.getTeamName().isEmpty()){
+            throw new TeamNotFoundException("Team cannot be null");
+        }
         boolean existSameNameTeam=teamRepository.existsTeamByName(teamRequest.getTeamName());
         if(existSameNameTeam){
             throw new TeamAlreadyExistException("Team already created with the same name");

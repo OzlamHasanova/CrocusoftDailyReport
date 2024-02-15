@@ -102,11 +102,11 @@ public class ReportService {
         return reportDto;
     }
 
-    public Page<DailyReport> filterDailyReports(LocalDate createDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
+    public Page<DailyReport> filterDailyReports(LocalDate createDate, List<Long> projectIds, int page, int pageSize) {
         logger.info("Filtering daily reports");
 
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<DailyReport> filteredReports = reportRepository.findByFilterCriteria(createDate, projectIds, userIds, pageable);
+        Page<DailyReport> filteredReports = reportRepository.findByFilter(createDate, projectIds, pageable);
 
         logger.info("Daily reports filtered successfully");
         return filteredReports;

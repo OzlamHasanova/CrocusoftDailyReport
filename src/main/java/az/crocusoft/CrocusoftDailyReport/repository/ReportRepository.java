@@ -36,5 +36,14 @@ public interface ReportRepository extends JpaRepository<DailyReport,Long> {
             @Param("userIds") List<Long> userIds,
             Pageable pageable
     );
+    @Query("SELECT dr FROM DailyReport dr " +
+            "JOIN dr.user u " +
+            "WHERE (:createDate IS NULL OR dr.createDate = :createDate) " +
+            "AND (:projectIds IS NULL OR dr.project.Id IN (:projectIds)) " )
+    Page<DailyReport> findByFilter(
+            @Param("createDate") LocalDate createDate,
+            @Param("projectIds") List<Long> projectIds,
+            Pageable pageable
+    );
 
 }

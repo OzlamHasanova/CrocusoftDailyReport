@@ -66,6 +66,7 @@ public class SecurityConfiguration {
                                .requestMatchers(HttpMethod.POST, "/v1/api/reports").hasRole("EMPLOYEE")
                                .requestMatchers(HttpMethod.PUT, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
                                .requestMatchers(HttpMethod.GET, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
+                                .requestMatchers(HttpMethod.GET,"/v1/api/reports/filter").hasRole("EMPLOYEE")
                                .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-admin").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                 .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-and-export-excel").hasAnyRole("SUPERADMIN","ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/v1/api/reports/{id}").hasAnyRole("SUPERADMIN","ADMIN")

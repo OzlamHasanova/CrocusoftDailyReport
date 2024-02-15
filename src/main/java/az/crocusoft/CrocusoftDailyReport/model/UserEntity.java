@@ -44,9 +44,6 @@ public class UserEntity implements UserDetails {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users",
             cascade = {CascadeType.DETACH, CascadeType.MERGE,
                     CascadeType.PERSIST, CascadeType.REFRESH})
-//    @JoinTable(name = "user_project",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "project_id"))
     @JsonIgnore
     private List<Project> projects;
 
