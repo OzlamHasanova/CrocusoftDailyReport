@@ -99,6 +99,7 @@ public class AuthenticationService {
                     .id(userId)
                     .accessToken(jwtToken)
                     .refreshToken(refreshToken)
+                    .expiredDate(jwtService.extractExpiration(jwtToken))
                     .build();
         }catch (Exception exception){
             throw new UserNotFoundException("User or password is wrong"+exception.getMessage());
