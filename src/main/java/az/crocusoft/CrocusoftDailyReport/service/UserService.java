@@ -50,17 +50,18 @@ public class UserService {
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
 
-    public UserDto getById(Long id) {
-        logger.info("Getting user by id: {}", id);
+    public UserDto getById() {
+        Long userId=authenticationService.getSignedInUser().getId();
+        logger.info("Getting user by id: {}", userId);
 
-        Optional<UserEntity> user = userRepository.findById(id);
+        Optional<UserEntity> user = userRepository.findById(userId);
         UserEntity userEntity = user.orElse(null);
         if (userEntity != null) {
             UserDto userDto = convertToDto(userEntity);
             logger.info("User retrieved successfully");
             return userDto;
         } else {
-            logger.warn("User not found with id: {}", id);
+            logger.warn("User not found with id: {}", userId);
             return null;
         }
     }

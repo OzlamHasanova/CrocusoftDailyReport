@@ -23,9 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getById(@PathVariable("id") Long id) {
-        UserDto user = userService.getById(id);
+    @GetMapping("/profile")
+    public ResponseEntity<UserDto> getById() {
+        UserDto user = userService.getById();
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
