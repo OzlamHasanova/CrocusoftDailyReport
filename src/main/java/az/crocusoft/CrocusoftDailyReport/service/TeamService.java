@@ -5,6 +5,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.TeamMemberDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.TeamRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.TeamResponseForGet;
+import az.crocusoft.CrocusoftDailyReport.exception.TeamAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamHasAssociatedEmployeesException;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
@@ -30,6 +31,10 @@ public class TeamService {
 
     public void createTeam(TeamRequest teamRequest) {
         logger.info("Creating team");
+        boolean existSameNameTeam=teamRepository.existsTeamByName(teamRequest.getTeamName());
+        if(existSameNameTeam){
+            throw new TeamAlreadyExistException("Team already created with the same name");
+        }
 
         Team team = new Team();
         team.setName(teamRequest.getTeamName());

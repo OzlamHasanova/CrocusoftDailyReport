@@ -5,7 +5,9 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponse;
 import az.crocusoft.CrocusoftDailyReport.exception.EmployeeNotFoundException;
+import az.crocusoft.CrocusoftDailyReport.exception.ProjectAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.exception.ProjectNotFoundException;
+import az.crocusoft.CrocusoftDailyReport.exception.TeamAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
@@ -48,6 +50,10 @@ public class ProjectService {
 
     public ProjectResponse createProject(ProjectDto projectRequest) {
         Project project = new Project();
+        boolean existSameNameProject=projectRepository.existsProjectByName(projectRequest.getName());
+        if(existSameNameProject){
+            throw new ProjectAlreadyExistException("Project already created with the same name");
+        }
         project.setName(projectRequest.getName());
 
         List<UserEntity> employees = new ArrayList<>();

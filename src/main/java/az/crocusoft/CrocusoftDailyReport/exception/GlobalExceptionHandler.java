@@ -79,4 +79,24 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(TeamAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleTeamAlreadyExistException(TeamAlreadyExistException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ProjectAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleProjectAlreadyExistException(ProjectAlreadyExistException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
