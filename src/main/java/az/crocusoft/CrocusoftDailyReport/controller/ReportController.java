@@ -3,6 +3,7 @@ package az.crocusoft.CrocusoftDailyReport.controller;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
+import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
 import az.crocusoft.CrocusoftDailyReport.service.ReportService;
@@ -62,22 +63,24 @@ public class ReportController {
     }
 
     @GetMapping("/filter-admin")
-    public ResponseEntity<Page<DailyReport>> filterDailyReportsForAdmin(
-            @RequestParam(value = "createDate", required = false) LocalDate createDate,
+    public ResponseEntity<Page<DailyReportFilterAdminResponse>> filterDailyReportsForAdmin(
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) {
-        Page<DailyReport> searchResult = reportService.filterDailyReportsForAdmin(
-                 createDate, projectIds, userIds, page,pageSize
+        Page<DailyReportFilterAdminResponse> searchResult = reportService.filterDailyReportsForAdmin(
+                 startDate,endDate, projectIds, userIds, page,pageSize
         );
         return ResponseEntity.ok(searchResult);
     }
     @GetMapping("/filter-and-export-excel")
-    public ResponseEntity<Page<DailyReport>> filterDailyReportsAndExportExcel(
+    public ResponseEntity<Page<DailyReportFilterAdminResponse>> filterDailyReportsAndExportExcel(
             HttpServletResponse response,
-            @RequestParam(value = "createDate", required = false) LocalDate createDate,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
             @RequestParam(defaultValue = "0") int page,
@@ -89,8 +92,8 @@ public class ReportController {
         String headerKey="Content-Disposition";
         String headerValue="attachment;filename=Daily-reports.xls";
         response.setHeader(headerKey,headerValue);
-        Page<DailyReport> searchResult = reportService.generateDailyReportExcel(
-               response, createDate, projectIds, userIds,pageable
+        Page<DailyReportFilterAdminResponse> searchResult = reportService.generateDailyReportExcel(
+               response, startDate,endDate, projectIds, userIds,pageable
         );
         return ResponseEntity.ok(searchResult);
     }

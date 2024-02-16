@@ -41,7 +41,7 @@ public class ProjectService {
         List<UserEntity> employees = project.getUsers();
 
         List<UserResponse> userResponses = employees.stream()
-                .map(user -> new UserResponse(user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getTeam().getName()))
                 .collect(Collectors.toList());
 
         logger.info("Retrieved project by id: {}", id);
@@ -75,7 +75,7 @@ public class ProjectService {
         Project savedProject = projectRepository.save(project);
 
         List<UserResponse> employeeResponses = savedProject.getUsers().stream()
-                .map(user -> new UserResponse(user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(user.getId(),user.getName(), user.getSurname(), user.getTeam().getName()))
                 .collect(Collectors.toList());
 
         logger.info("Created project with name: {}", savedProject.getName());
@@ -102,10 +102,18 @@ public class ProjectService {
         }
         existingProject.setUsers(employees);
 
+        List<UserEntity> usersToRemove = new ArrayList<>();
+        for (UserEntity user : existingProject.getUsers()) {
+            if (!projectDto.getEmployeeIds().contains(user.getId())) {
+                usersToRemove.add(user);
+            }
+        }
+        existingProject.getUsers().removeAll(usersToRemove);
+
         Project savedProject = projectRepository.save(existingProject);
 
         List<UserResponse> employeeResponses = savedProject.getUsers().stream()
-                .map(user -> new UserResponse(user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getTeam().getName()))
                 .collect(Collectors.toList());
 
         logger.info("Updated project with id: {}", id);
@@ -116,8 +124,7 @@ public class ProjectService {
         List<Project> projects = projectRepository.findByNameContainingIgnoreCase(projectName);
         List<ProjectResponseForFilter> filteredProjectResponses = projects.stream()
                 .filter(project -> project.getName().toLowerCase().contains(projectName.toLowerCase()))
-                .map(project -> new ProjectResponseForFilter(project.getName()))
-                .collect(Collectors.toList());
+                .map(project -> new ProjectResponseForFilter(project.getId(), project.getName(),convertUserEntitiesToResponses(project.getUsers()))).collect(Collectors.toList());
         if (filteredProjectResponses.isEmpty()) {
             logger.warn("Project not found with name: {}", projectName);
             throw new ProjectNotFoundException("Project not found");
@@ -125,5 +132,19 @@ public class ProjectService {
 
         logger.info("Filtered projects by name: {}", projectName);
         return filteredProjectResponses;
+    }
+    public List<UserResponse> convertUserEntitiesToResponses(List<UserEntity> userEntities) {
+        return userEntities.stream()
+                .map(this::convertUserEntityToResponse)
+                .collect(Collectors.toList());
+    }
+
+    private UserResponse convertUserEntityToResponse(UserEntity userEntity) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(userEntity.getId());
+        userResponse.setName(userEntity.getName());
+        userResponse.setSurname(userEntity.getSurname());
+        userResponse.setTeamName(userEntity.getTeam().getName()); // Assuming getTeam() method is available
+        return userResponse;
     }
 }

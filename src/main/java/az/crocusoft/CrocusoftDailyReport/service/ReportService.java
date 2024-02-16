@@ -4,10 +4,15 @@ package az.crocusoft.CrocusoftDailyReport.service;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
+import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
+import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponse;
 import az.crocusoft.CrocusoftDailyReport.exception.DailyReportNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
+import az.crocusoft.CrocusoftDailyReport.model.Project;
+import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.repository.ProjectRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.ReportRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
@@ -21,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -29,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +45,7 @@ public class ReportService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
+    private final TeamService teamService;
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
 
@@ -120,19 +128,50 @@ public class ReportService {
         return response;
     }
 
-    public Page<DailyReport> filterDailyReportsForAdmin(LocalDate createDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
+    public Page<DailyReportFilterAdminResponse> filterDailyReportsForAdmin(LocalDate startDate, LocalDate endDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
         logger.info("Filtering daily reports for admin");
 
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<DailyReport> filteredReports = reportRepository.findByFilterCriteria(createDate, projectIds, userIds, pageable);
+        Page<DailyReport> filteredReports = reportRepository.findByFilterCriteria(startDate, endDate, projectIds, userIds, pageable);
+
+        List<DailyReportFilterAdminResponse> responseList = filteredReports.stream()
+                .map(this::mapToAdminResponse)
+                .collect(Collectors.toList());
 
         logger.info("Daily reports filtered successfully for admin");
-        return filteredReports;
+        return new PageImpl<>(responseList, pageable, filteredReports.getTotalElements());
     }
 
-    public Page<DailyReport> generateDailyReportExcel(
+    private DailyReportFilterAdminResponse mapToAdminResponse(DailyReport dailyReport) {
+        DailyReportFilterAdminResponse response = new DailyReportFilterAdminResponse();
+        response.setId(dailyReport.getId());
+        response.setDescription(dailyReport.getDescription());
+        response.setUser(mapToUserResponse(dailyReport.getUser()));
+        response.setProject(mapToProjectDto(dailyReport.getProject()));
+        return response;
+    }
+
+    private UserResponse mapToUserResponse(UserEntity user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setName(user.getName());
+        response.setSurname(user.getSurname());
+        response.setTeamName(user.getTeam().getName());
+
+        return response;
+    }
+
+    private ProjectDtoForGetApi mapToProjectDto(Project project) {
+        ProjectDtoForGetApi dto = new ProjectDtoForGetApi();
+        dto.setId(project.getId());
+        dto.setName(project.getName());
+        return dto;
+    }
+
+    public Page<DailyReportFilterAdminResponse> generateDailyReportExcel(
             HttpServletResponse httpServletResponse,
-            LocalDate creatDate,
+            LocalDate startDate,
+            LocalDate endDate,
             List<Long> projectIds,
             List<Long> userIds,
             Pageable pageable) throws IOException {
@@ -140,7 +179,8 @@ public class ReportService {
 
 
         Page<DailyReport> reports = reportRepository.findByFilterCriteria(
-                creatDate,
+                startDate,
+                endDate,
                 projectIds,
                 userIds,
                 pageable
@@ -176,8 +216,10 @@ public class ReportService {
         hssfWorkbook.close();
         outputStream.close();
         logger.info("Daily report Excel generated successfully");
-
-        return reports;
+        List<DailyReportFilterAdminResponse> responseList = reports.stream()
+                .map(this::mapToAdminResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(responseList, pageable, reports.getTotalElements());
 
     }
 }
