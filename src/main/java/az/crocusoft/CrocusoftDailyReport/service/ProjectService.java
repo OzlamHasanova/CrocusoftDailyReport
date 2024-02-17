@@ -121,10 +121,17 @@ public class ProjectService {
     }
 
     public List<ProjectResponseForFilter> filterProjectsByName(String projectName) throws ProjectNotFoundException {
-        List<Project> projects = projectRepository.findByNameContainingIgnoreCase(projectName);
+        List<Project> projects;
+        if (projectName == null) {
+            projects = projectRepository.findAll();
+        } else {
+            projects = projectRepository.findByNameContainingIgnoreCase(projectName);
+        }
+
         List<ProjectResponseForFilter> filteredProjectResponses = projects.stream()
-                .filter(project -> project.getName().toLowerCase().contains(projectName.toLowerCase()))
-                .map(project -> new ProjectResponseForFilter(project.getId(), project.getName(),convertUserEntitiesToResponses(project.getUsers()))).collect(Collectors.toList());
+                .map(project -> new ProjectResponseForFilter(project.getId(), project.getName(), convertUserEntitiesToResponses(project.getUsers())))
+                .collect(Collectors.toList());
+
         if (filteredProjectResponses.isEmpty()) {
             logger.warn("Project not found with name: {}", projectName);
             throw new ProjectNotFoundException("Project not found");

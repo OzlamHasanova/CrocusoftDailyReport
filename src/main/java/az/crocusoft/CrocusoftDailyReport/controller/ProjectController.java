@@ -36,8 +36,8 @@ public class ProjectController {
         return ResponseEntity.ok(updatedProject);
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<List<ProjectResponseForFilter>> filterProjectsByName(@RequestParam("projectName") String projectName) {
+    @GetMapping("/search")
+    public ResponseEntity<List<ProjectResponseForFilter>> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName) {
         List<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName);
         return ResponseEntity.ok(filteredProjects);
     }
