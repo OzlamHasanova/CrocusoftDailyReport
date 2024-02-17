@@ -23,16 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping("/profile")
-    public ResponseEntity<UserDto> getById() {
-        UserDto user = userService.getById();
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
-    }
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseForGetAll>> getAllUsers() {
         List<UserResponseForGetAll> user = userService.getAllUsers();

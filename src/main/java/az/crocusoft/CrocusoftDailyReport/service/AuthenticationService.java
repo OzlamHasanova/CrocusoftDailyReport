@@ -1,10 +1,15 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 import az.crocusoft.CrocusoftDailyReport.config.JwtService;
+import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
+import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
+import az.crocusoft.CrocusoftDailyReport.model.Project;
+import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.Token;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
@@ -31,6 +36,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -159,6 +167,54 @@ public class AuthenticationService {
         } else {
             logger.warn("Failed to extract username from refresh token");
         }
+    }
+    public UserDto getById() {
+        Long userId=getSignedInUser().getId();
+        logger.info("Getting user by id: {}", userId);
+
+        Optional<UserEntity> user = repository.findById(userId);
+        UserEntity userEntity = user.orElse(null);
+        if (userEntity != null) {
+            UserDto userDto = convertToDto(userEntity);
+            logger.info("User retrieved successfully");
+            return userDto;
+        } else {
+            logger.warn("User not found with id: {}", userId);
+            return null;
+        }
+    }
+    public UserDto convertToDto(UserEntity userEntity) {
+        UserDto userDto = new UserDto();
+        userDto.setName(userEntity.getName());
+        userDto.setSurname(userEntity.getSurname());
+        userDto.setRole(userEntity.getRole());
+        userDto.setTeam(convertToTeamDto(userEntity.getTeam()));
+        userDto.setProject(convertToProjectDtoList(userEntity.getProjects()));
+        userDto.setStatus(userEntity.getStatus().toString());
+        return userDto;
+    }
+    private TeamDto convertToTeamDto(Team team) {
+        if (team == null) {
+            return null;
+        }
+        TeamDto teamDto = new TeamDto();
+        teamDto.setId(team.getId());
+        teamDto.setName(team.getName());
+        return teamDto;
+    }
+
+    private List<ProjectDtoForGetApi> convertToProjectDtoList(List<Project> projects) {
+        if (projects == null) {
+            return null;
+        }
+        List<ProjectDtoForGetApi> projectDtoList = new ArrayList<>();
+        for (Project project : projects) {
+            ProjectDtoForGetApi projectDto = new ProjectDtoForGetApi();
+            projectDto.setId(project.getId());
+            projectDto.setName(project.getName());
+            projectDtoList.add(projectDto);
+        }
+        return projectDtoList;
     }
 
     public UserEntity getSignedInUser() {

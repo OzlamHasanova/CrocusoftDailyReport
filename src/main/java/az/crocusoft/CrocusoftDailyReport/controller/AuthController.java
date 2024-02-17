@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
+import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +46,16 @@ public class AuthController {
             HttpServletResponse response
     ) throws IOException {
         service.refreshToken(request, response);
+    }
+    @GetMapping("/profile")
+    public ResponseEntity<UserDto> getById() {
+        UserDto user = service.getById();
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
 }

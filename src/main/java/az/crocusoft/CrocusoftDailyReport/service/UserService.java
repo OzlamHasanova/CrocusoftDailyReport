@@ -50,56 +50,10 @@ public class UserService {
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
 
-    public UserDto getById() {
-        Long userId=authenticationService.getSignedInUser().getId();
-        logger.info("Getting user by id: {}", userId);
 
-        Optional<UserEntity> user = userRepository.findById(userId);
-        UserEntity userEntity = user.orElse(null);
-        if (userEntity != null) {
-            UserDto userDto = convertToDto(userEntity);
-            logger.info("User retrieved successfully");
-            return userDto;
-        } else {
-            logger.warn("User not found with id: {}", userId);
-            return null;
-        }
-    }
 
-    private UserDto convertToDto(UserEntity userEntity) {
-        UserDto userDto = new UserDto();
-        userDto.setName(userEntity.getName());
-        userDto.setSurname(userEntity.getSurname());
-        userDto.setRole(userEntity.getRole());
-        userDto.setTeam(convertToTeamDto(userEntity.getTeam()));
-        userDto.setProject(convertToProjectDtoList(userEntity.getProjects()));
-        userDto.setStatus(userEntity.getStatus().toString());
-        return userDto;
-    }
 
-    private TeamDto convertToTeamDto(Team team) {
-        if (team == null) {
-            return null;
-        }
-        TeamDto teamDto = new TeamDto();
-        teamDto.setId(team.getId());
-        teamDto.setName(team.getName());
-        return teamDto;
-    }
 
-    private List<ProjectDtoForGetApi> convertToProjectDtoList(List<Project> projects) {
-        if (projects == null) {
-            return null;
-        }
-        List<ProjectDtoForGetApi> projectDtoList = new ArrayList<>();
-        for (Project project : projects) {
-            ProjectDtoForGetApi projectDto = new ProjectDtoForGetApi();
-            projectDto.setId(project.getId());
-            projectDto.setName(project.getName());
-            projectDtoList.add(projectDto);
-        }
-        return projectDtoList;
-    }
 
     public UserDto update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
@@ -111,7 +65,7 @@ public class UserService {
         user.setRole(roleRepository.findById(userRequest.getRoleId()).orElseThrow());
 
         UserEntity updatedUser = userRepository.save(user);
-        UserDto userDto = convertToDto(updatedUser);
+        UserDto userDto = authenticationService.convertToDto(updatedUser);
 
         logger.info("User updated successfully");
         return userDto;
