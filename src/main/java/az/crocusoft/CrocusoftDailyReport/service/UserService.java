@@ -203,6 +203,21 @@ public class UserService {
         List<UserResponseForGetAll> userResponseForGetAllList=convertToDtoList(userEntityList);
         return userResponseForGetAllList;
     }
+    public UserDto getById(Long userId) {
+
+        logger.info("Getting user by id: {}", userId);
+
+        Optional<UserEntity> user = userRepository.findById(userId);
+        UserEntity userEntity = user.orElse(null);
+        if (userEntity != null) {
+            UserDto userDto = authenticationService.convertToDto(userEntity);
+            logger.info("User retrieved successfully");
+            return userDto;
+        } else {
+            logger.warn("User not found with id: {}", userId);
+            return null;
+        }
+    }
 
     public List<UserResponseForGetAll> convertToDtoList(List<UserEntity> userEntityList) {
         List<UserResponseForGetAll> dtoList = new ArrayList<>();

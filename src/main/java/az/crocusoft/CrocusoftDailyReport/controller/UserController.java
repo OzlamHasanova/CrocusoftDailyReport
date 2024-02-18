@@ -23,6 +23,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getById(@PathVariable("id") Long id) {
+        UserDto user = userService.getById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseForGetAll>> getAllUsers() {

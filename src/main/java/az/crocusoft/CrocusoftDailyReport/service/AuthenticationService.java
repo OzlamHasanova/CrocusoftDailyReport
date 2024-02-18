@@ -168,7 +168,7 @@ public class AuthenticationService {
             logger.warn("Failed to extract username from refresh token");
         }
     }
-    public UserDto getById() {
+    public UserDto getProfile() {
         Long userId=getSignedInUser().getId();
         logger.info("Getting user by id: {}", userId);
 

@@ -48,8 +48,8 @@ public class AuthController {
         service.refreshToken(request, response);
     }
     @GetMapping("/profile")
-    public ResponseEntity<UserDto> getById() {
-        UserDto user = service.getById();
+    public ResponseEntity<UserDto> getProfile() {
+        UserDto user = service.getProfile();
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
