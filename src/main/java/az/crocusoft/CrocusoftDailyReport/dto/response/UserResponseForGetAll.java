@@ -12,4 +12,7 @@ public class UserResponseForGetAll {
     private Long userId;
     private String fullname;
     private String email;
+    private String teamName;
+    private String status;
+    private String role;
 }

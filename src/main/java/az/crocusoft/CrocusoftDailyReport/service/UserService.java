@@ -211,6 +211,9 @@ public class UserService {
                     .userId(userEntity.getId())
                     .fullname(userEntity.getName() + " " + userEntity.getSurname())
                     .email(userEntity.getEmail())
+                    .teamName(userEntity.getTeam().getName())
+                    .role(userEntity.getRole().getRoleEnum().name())
+                    .status(userEntity.getStatus().name())
                     .build();
             dtoList.add(dto);
         }
