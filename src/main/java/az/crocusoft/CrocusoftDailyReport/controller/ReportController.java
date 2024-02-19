@@ -2,6 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.controller;
 
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
+import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
@@ -56,7 +57,7 @@ public class ReportController {
         Page<DailyReport> filteredReports = reportService.filterDailyReports( createDate, projectIds,  page, pageSize);
 
         if (filteredReports.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No matching reports found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("No matching reports found."));
         }
 
         return ResponseEntity.ok(filteredReports);

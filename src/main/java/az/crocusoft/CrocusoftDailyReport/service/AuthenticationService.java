@@ -7,6 +7,8 @@ import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
+import az.crocusoft.CrocusoftDailyReport.dto.response.RefreshTokenResponse;
+import az.crocusoft.CrocusoftDailyReport.exception.TokenNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
@@ -17,7 +19,6 @@ import az.crocusoft.CrocusoftDailyReport.model.enums.TokenType;
 import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.TokenRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class AuthenticationService {
             var refreshToken = jwtService.generateRefreshToken(user);
             Long userId = repository.findByEmail(request.getEmail()).getId();
             revokeAllUserTokens(user);
-            saveUserToken(user, jwtToken);
+            saveUserToken(user, refreshToken);
             return AuthenticationResponse.builder()
                     .id(userId)
                     .accessToken(jwtToken)
@@ -137,37 +137,54 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.warn("Invalid or missing authorization header in refresh token request");
-            return;
-        }
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail);
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-            } else {
-                logger.warn("Invalid refresh token for user: {}", userEmail);
-            }
-        } else {
-            logger.warn("Failed to extract username from refresh token");
+//    public ResponseEntity<BaseResponse> refreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        if(!tokenRepository.existsTokenByToken(refreshToken)){
+//            throw new TokenNotFoundException("token not found");
+//        }
+//        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+////        final String refreshToken;
+//        final String userEmail;
+//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            logger.warn("Invalid or missing authorization header in refresh token request");
+//            return null;
+//        }
+//        refreshToken = authHeader.substring(7);
+//        userEmail = jwtService.extractUsername(refreshToken);
+//        if (userEmail != null) {
+//            var user = this.repository.findByEmail(userEmail);
+//            if (jwtService.isTokenValid(refreshToken, user)) {
+//                var accessToken = jwtService.generateToken(user);
+//                revokeAllUserTokens(user);
+//                saveUserToken(user, refreshToken);
+////                var authResponse = AuthenticationResponse.builder()
+//////                        .accessToken(accessToken)
+////                        .refreshToken(refreshToken)
+////                        .build();
+//               return new ResponseEntity<>(new BaseResponse(accessToken), HttpStatusCode.valueOf(HttpStatus.OK.value()));
+//            } else {
+//                logger.warn("Invalid refresh token for user: {}", userEmail);
+//            }
+//        } else {
+//            logger.warn("Failed to extract username from refresh token");
+//        }
+//        return null;
+//    }
+public RefreshTokenResponse refreshToken(String refreshToken) {
+    String mail = jwtService.extractUsername(refreshToken);
+    if (mail != null) {
+        var user = repository.findByEmail(mail);
+        if (jwtService.isTokenValid(refreshToken, user)) {
+            var accessToken = jwtService.generateToken(user);
+            revokeAllUserTokens(user);
+            saveUserToken(user, accessToken);
+            return RefreshTokenResponse.builder()
+                    .id(user.getId())
+                    .refreshToken(refreshToken)
+                    .build();
         }
     }
+    return null;
+}
     public UserDto getProfile() {
         Long userId=getSignedInUser().getId();
         logger.info("Getting user by id: {}", userId);

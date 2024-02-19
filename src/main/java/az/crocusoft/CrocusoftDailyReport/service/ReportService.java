@@ -112,9 +112,10 @@ public class ReportService {
 
     public Page<DailyReport> filterDailyReports(LocalDate createDate, List<Long> projectIds, int page, int pageSize) {
         logger.info("Filtering daily reports");
+        Long userId=authenticationService.getSignedInUser().getId();
 
         Pageable pageable = PageRequest.of(page, pageSize);
-        Page<DailyReport> filteredReports = reportRepository.findByFilter(createDate, projectIds, pageable);
+        Page<DailyReport> filteredReports = reportRepository.findByFilter(createDate, projectIds, userId,pageable);
 
         logger.info("Daily reports filtered successfully");
         return filteredReports;

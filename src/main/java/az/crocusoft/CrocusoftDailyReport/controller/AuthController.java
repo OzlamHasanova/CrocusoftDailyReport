@@ -5,6 +5,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.AuthenticationRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.RefreshTokenResponse;
 import az.crocusoft.CrocusoftDailyReport.service.AuthenticationService;
 import az.crocusoft.CrocusoftDailyReport.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,11 +42,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        service.refreshToken(request, response);
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestParam String refreshToken) {
+        return new ResponseEntity<>(service.refreshToken(refreshToken),HttpStatus.OK);
     }
     @GetMapping("/profile")
     public ResponseEntity<UserDto> getProfile() {

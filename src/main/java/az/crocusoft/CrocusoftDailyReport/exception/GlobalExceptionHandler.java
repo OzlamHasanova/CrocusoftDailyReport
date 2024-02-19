@@ -14,60 +14,74 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProjectNotFoundException.class)
-    public ExceptionResponse handleCartItemOwnership(ProjectNotFoundException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(ProjectNotFoundException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.NOT_FOUND.value()
                 , HttpStatus.NOT_FOUND
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
     }
     @ExceptionHandler(EmployeeNotFoundException.class)
-    public ExceptionResponse handleCartItemOwnership(EmployeeNotFoundException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(EmployeeNotFoundException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.NOT_FOUND.value()
                 , HttpStatus.NOT_FOUND
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
     }
     @ExceptionHandler(DailyReportNotFoundException.class)
-    public ExceptionResponse handleCartItemOwnership(DailyReportNotFoundException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(DailyReportNotFoundException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.NOT_FOUND.value()
                 , HttpStatus.NOT_FOUND
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
     }
     @ExceptionHandler(TeamNotFoundException.class)
-    public ExceptionResponse handleCartItemOwnership(TeamNotFoundException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(TeamNotFoundException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.NOT_FOUND.value()
                 , HttpStatus.NOT_FOUND
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+
     }
     @ExceptionHandler(TeamHasAssociatedEmployeesException.class)
-    public ExceptionResponse handleCartItemOwnership(TeamHasAssociatedEmployeesException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(TeamHasAssociatedEmployeesException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.BAD_REQUEST.value()
                 , HttpStatus.BAD_REQUEST
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
     }
     @ExceptionHandler(UpdateTimeException.class)
-    public ExceptionResponse handleCartItemOwnership(UpdateTimeException exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(UpdateTimeException exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.REQUEST_TIMEOUT.value()
                 , HttpStatus.REQUEST_TIMEOUT
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.REQUEST_TIMEOUT);
+
     }
     @ExceptionHandler(PasswordChangeIsFalse.class)
-    public ExceptionResponse handleCartItemOwnership(PasswordChangeIsFalse exception) {
-        return new ExceptionResponse(
+    public ResponseEntity<ExceptionResponse> handleCartItemOwnership(PasswordChangeIsFalse exception) {
+        ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now()
                 , HttpStatus.BAD_REQUEST.value()
                 , HttpStatus.BAD_REQUEST
                 , exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+
     }
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleUserNotFoundException(UserNotFoundException ex) {
@@ -98,5 +112,15 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleProjectAlreadyExistException(TokenNotFoundException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
