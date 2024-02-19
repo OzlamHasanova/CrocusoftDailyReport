@@ -187,6 +187,7 @@ public class AuthenticationService {
         UserDto userDto = new UserDto();
         userDto.setName(userEntity.getName());
         userDto.setSurname(userEntity.getSurname());
+        userDto.setEmail(userEntity.getEmail());
         userDto.setRole(userEntity.getRole());
         userDto.setTeam(convertToTeamDto(userEntity.getTeam()));
         userDto.setProject(convertToProjectDtoList(userEntity.getProjects()));

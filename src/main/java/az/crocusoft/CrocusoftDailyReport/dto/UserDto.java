@@ -12,6 +12,7 @@ import java.util.List;
 public class UserDto {
     private String name;
     private String surname;
+    private String email;
     private Role role;
     private TeamDto team;
     private List<ProjectDtoForGetApi> project;
