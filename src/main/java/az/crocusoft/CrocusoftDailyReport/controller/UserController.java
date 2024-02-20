@@ -64,9 +64,9 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse("User deleted successfully"));
     }
     @PutMapping("/status/{id}")
-    public ResponseEntity<Void> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {
+    public ResponseEntity<BaseResponse> updateUserStatus(@PathVariable Long id, @RequestParam Status status) {
         userService.updateUserStatus(id,status);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new BaseResponse("status update is successfully"));
     }
     @PostMapping("/resetPassword/{id}")
     public ResponseEntity<Void> updateUserPassword(@PathVariable Long id, @RequestParam String newPassword) {
