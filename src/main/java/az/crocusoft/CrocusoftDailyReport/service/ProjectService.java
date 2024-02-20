@@ -18,6 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -120,12 +124,14 @@ public class ProjectService {
         return new ProjectResponse(savedProject.getName(), employeeResponses);
     }
 
-    public List<ProjectResponseForFilter> filterProjectsByName(String projectName) throws ProjectNotFoundException {
-        List<Project> projects;
+    public Page<ProjectResponseForFilter> filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
+        Page<Project> projects;
+        Pageable pageable = PageRequest.of(page, pageSize);
+
         if (projectName == null) {
-            projects = projectRepository.findAll();
+            projects = projectRepository.findAll(pageable);
         } else {
-            projects = projectRepository.findByNameContainingIgnoreCase(projectName);
+            projects = projectRepository.findByNameContainingIgnoreCase(projectName,pageable);
         }
 
         List<ProjectResponseForFilter> filteredProjectResponses = projects.stream()
@@ -138,7 +144,7 @@ public class ProjectService {
         }
 
         logger.info("Filtered projects by name: {}", projectName);
-        return filteredProjectResponses;
+        return new PageImpl<>(filteredProjectResponses);
     }
     public List<UserResponse> convertUserEntitiesToResponses(List<UserEntity> userEntities) {
         return userEntities.stream()

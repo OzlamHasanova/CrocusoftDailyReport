@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                                .requestMatchers(HttpMethod.POST, "/v1/api/projects").hasAnyRole("SUPERADMIN","ADMIN")
                                .requestMatchers(HttpMethod.GET, "/v1/api/projects/{id}").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.PUT, "/v1/api/projects/{id}").hasAnyRole("SUPERADMIN","ADMIN")
-                               .requestMatchers(HttpMethod.GET, "/v1/api/projects/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/projects/search").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
 
                                .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-admin").hasRole("SUPERADMIN")
                                 .requestMatchers(HttpMethod.GET, "/v1/api/reports/filter-and-export-excel").hasAnyRole("SUPERADMIN","ADMIN")

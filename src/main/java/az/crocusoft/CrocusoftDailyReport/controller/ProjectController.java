@@ -8,6 +8,7 @@ import az.crocusoft.CrocusoftDailyReport.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +38,10 @@ public class ProjectController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProjectResponseForFilter>> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName) {
-        List<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName);
+    public ResponseEntity<Page<ProjectResponseForFilter>> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "2") int pageSize) {
+        Page<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName,page,pageSize);
         return ResponseEntity.ok(filteredProjects);
     }
 
