@@ -13,6 +13,7 @@ import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
+import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.repository.ProjectRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +75,7 @@ public class ProjectService {
 
         List<UserEntity> employees = new ArrayList<>();
         for (Long employeeId : projectRequest.getEmployeeIds()) {
-            Optional<UserEntity> optionalUser = userRepository.findById(employeeId);
+            Optional<UserEntity> optionalUser = userRepository.findByIdAndAndIsDeleted(employeeId, false);
             if (optionalUser.isPresent()) {
                 UserEntity user = optionalUser.get();
                 if (user.getRole().getRoleEnum() == RoleEnum.SUPERADMIN ||user.getRole().getRoleEnum() == RoleEnum.HEAD || user.getRole().getRoleEnum() == RoleEnum.ADMIN) {
