@@ -39,7 +39,7 @@ public class ProjectController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<ProjectResponseForFilter>> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName,
-                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "1") int page,
                                                                                @RequestParam(defaultValue = "2") int pageSize) {
         Page<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName,page,pageSize);
         return ResponseEntity.ok(filteredProjects);

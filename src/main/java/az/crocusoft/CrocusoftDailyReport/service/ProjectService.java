@@ -125,8 +125,9 @@ public class ProjectService {
     }
 
     public Page<ProjectResponseForFilter> filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
+        int newPage=page-1;
         Page<Project> projects;
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(newPage, pageSize);
 
         if (projectName == null) {
             projects = projectRepository.findAll(pageable);
