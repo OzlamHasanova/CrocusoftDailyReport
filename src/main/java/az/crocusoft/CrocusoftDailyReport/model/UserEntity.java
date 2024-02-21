@@ -4,6 +4,7 @@ import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +39,7 @@ public class UserEntity implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @JsonIgnore
+    @JsonIgnoreProperties("users")
     private Team team;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users",

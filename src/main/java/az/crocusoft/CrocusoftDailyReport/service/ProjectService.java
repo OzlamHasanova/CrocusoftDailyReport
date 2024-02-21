@@ -1,6 +1,7 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 
 import az.crocusoft.CrocusoftDailyReport.dto.ProjectDto;
+import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponse;
@@ -9,6 +10,7 @@ import az.crocusoft.CrocusoftDailyReport.exception.ProjectAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.exception.ProjectNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.TeamAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
+import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.repository.ProjectRepository;
@@ -45,11 +47,21 @@ public class ProjectService {
         List<UserEntity> employees = project.getUsers();
 
         List<UserResponse> userResponses = employees.stream()
-                .map(user -> new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(user.getId(),
+                        user.getName(),
+                        user.getSurname(),
+                        (getTeamName(user))))
                 .collect(Collectors.toList());
 
         logger.info("Retrieved project by id: {}", id);
         return new ProjectResponse(project.getName(), userResponses);
+    }
+    private String getTeamName(UserEntity user) {
+        if (user.getTeam() != null) {
+            return user.getTeam().getName();
+        } else {
+            return null;
+        }
     }
 
     public ProjectResponse createProject(ProjectDto projectRequest) {

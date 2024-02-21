@@ -84,7 +84,7 @@ public class ReportController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) throws IOException {
         Pageable pageable = PageRequest.of(page, pageSize);

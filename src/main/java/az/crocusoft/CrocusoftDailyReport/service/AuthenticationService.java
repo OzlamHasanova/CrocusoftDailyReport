@@ -231,9 +231,10 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
         if (team == null) {
             return null;
         }
-        TeamDto teamDto = new TeamDto();
-        teamDto.setId(team.getId());
-        teamDto.setName(team.getName());
+        TeamDto teamDto = TeamDto.builder()
+                .Id(team.getId())
+                .name(team.getName()).build();
+
         return teamDto;
     }
 
