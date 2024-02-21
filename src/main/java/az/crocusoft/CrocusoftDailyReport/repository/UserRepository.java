@@ -2,6 +2,8 @@ package az.crocusoft.CrocusoftDailyReport.repository;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,11 +23,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             "AND (:surname IS NULL OR u.surname = :surname) " +
             "AND (:teamIds IS NULL OR u.team.Id IN :teamIds) " +
             "AND (:projectIds IS NULL OR EXISTS (SELECT p FROM u.projects p WHERE p.Id IN :projectIds))")
-    List<UserEntity> filterUsers(
+    Page<UserEntity> filterUsers(
             @Param("name") String name,
             @Param("surname") String surname,
             @Param("teamIds") List<Long> teamIds,
-            @Param("projectIds") List<Long> projectIds);
+            @Param("projectIds") List<Long> projectIds,
+            Pageable pageable);
 
   UserEntity findByEmail(String email);
 
@@ -33,5 +36,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     List<UserEntity> findAllByIsDeleted(boolean deleted);
 
-//    Optional<UserEntity> findBy(String name);
 }

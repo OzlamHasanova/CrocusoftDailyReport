@@ -23,6 +23,10 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -74,7 +78,7 @@ public class UserService {
     public void delete(Long id) {
         logger.info("Deleting user with id: {}", id);
 
-        UserEntity user = userRepository.findByIdAndStatus(id,Status.ACTIVE)
+        UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
         user.setIsDeleted(true);
@@ -148,9 +152,10 @@ public class UserService {
         return "Email sent... please verify account within 5 minute";
     }
 
-    public List<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds) {
-        System.out.println("bbbbbb");
-        List<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds);
+    public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds,int page,int pageSize) {
+        int newPage=page-1;
+        Pageable pageable= PageRequest.of(newPage,pageSize);
+        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds,pageable);
         List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
 
         String currentUsername = authenticationService.getSignedInUser().getEmail();
@@ -172,7 +177,7 @@ public class UserService {
         }
 
 
-        return authenticationService.convertToDtoList(filteredAndCurrentUser);
+        return new PageImpl<>(authenticationService.convertToDtoList(filteredAndCurrentUser));
     }
     private boolean hasRestrictedRole(Role role) {
         if (role == null) {

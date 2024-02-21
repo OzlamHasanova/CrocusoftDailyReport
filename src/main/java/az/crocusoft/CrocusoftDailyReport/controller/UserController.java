@@ -12,6 +12,7 @@ import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,12 +52,14 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponseWithData("User update is successfully",userDto));
     }
     @GetMapping("/filter")
-    public ResponseEntity<List<UserDto>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
-                                                  @RequestParam(value = "lastName", required = false) String surname,
-                                                  @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
-                                                  @RequestParam(value = "projectIds", required = false) List<Long> projectIds
+    public ResponseEntity<Page<UserDto>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
+                                                     @RequestParam(value = "lastName", required = false) String surname,
+                                                     @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
+                                                     @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
+                                                     @RequestParam(defaultValue = "1") int page,
+                                                     @RequestParam(defaultValue = "2") int pageSize
                                                                    ) {
-        List<UserDto> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds);
+        Page<UserDto> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds,page,pageSize);
         return ResponseEntity.ok(filteredUsers);
     }
     @DeleteMapping("/delete/{id}")
