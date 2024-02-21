@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   UserEntity findByEmail(String email);
 
     Optional<UserEntity> findByIdAndStatus(Long id,Status status);
-    Optional<UserEntity> findByIdAndAndIsDeleted(Long id,Boolean isDeleted);
+    Optional<UserEntity> findByIdAndIsDeleted(Long id,Boolean isDeleted);
 
     List<UserEntity> findAllByIsDeleted(boolean deleted);
 

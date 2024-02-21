@@ -75,7 +75,7 @@ public class ProjectService {
 
         List<UserEntity> employees = new ArrayList<>();
         for (Long employeeId : projectRequest.getEmployeeIds()) {
-            Optional<UserEntity> optionalUser = userRepository.findByIdAndAndIsDeleted(employeeId, false);
+            Optional<UserEntity> optionalUser = userRepository.findByIdAndIsDeleted(employeeId, false);
             if (optionalUser.isPresent()) {
                 UserEntity user = optionalUser.get();
                 if (user.getRole().getRoleEnum() == RoleEnum.SUPERADMIN ||user.getRole().getRoleEnum() == RoleEnum.HEAD || user.getRole().getRoleEnum() == RoleEnum.ADMIN) {
