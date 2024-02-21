@@ -96,11 +96,11 @@ public class AuthenticationService {
                             request.getPassword()
                     )
             );
-            var user = repository.findByEmail(request.getEmail());
+            var user = repository.findByEmailAndIsDeletedAndStatus(request.getEmail(),false,Status.ACTIVE);
 
             var jwtToken = jwtService.generateToken(user);
             var refreshToken = jwtService.generateRefreshToken(user);
-            Long userId = repository.findByEmail(request.getEmail()).getId();
+            Long userId = repository.findByEmailAndIsDeletedAndStatus(request.getEmail(),false,Status.ACTIVE).getId();
             revokeAllUserTokens(user);
             saveUserToken(user, refreshToken);
             return AuthenticationResponse.builder()
@@ -254,7 +254,10 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
 
     public UserEntity getSignedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserEntity user = repository.findByEmail(authentication.getName());
+        UserEntity user = repository.findByEmailAndIsDeletedAndStatus(authentication.getName(),false,Status.ACTIVE);
+        if (user==null){
+            throw new UserNotFoundException("User not found");
+        }
         logger.info("Signed-in user: {}", user.getEmail());
         return user;
     }

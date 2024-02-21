@@ -67,7 +67,6 @@ public class JwtService {
 
     ) {
         String email = userDetails.getUsername();
-        System.out.println(email);
 
         UserEntity user = userRepository.findByEmail(email);
         String roleName = user.getRole().getRoleEnum().name();

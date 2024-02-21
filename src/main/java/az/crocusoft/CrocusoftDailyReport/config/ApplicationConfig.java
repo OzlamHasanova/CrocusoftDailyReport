@@ -1,4 +1,5 @@
 package az.crocusoft.CrocusoftDailyReport.config;
+import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> repository.findByEmail(email);
+        return email -> repository.findByEmailAndIsDeletedAndStatus(email,false, Status.ACTIVE);
                 //.orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
