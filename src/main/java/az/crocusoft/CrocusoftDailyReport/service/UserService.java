@@ -222,17 +222,24 @@ public class UserService {
     public List<UserResponseForGetAll> convertToDtoList(List<UserEntity> userEntityList) {
         List<UserResponseForGetAll> dtoList = new ArrayList<>();
         for (UserEntity userEntity : userEntityList) {
-            UserResponseForGetAll dto = UserResponseForGetAll.builder()
+            UserResponseForGetAll.UserResponseForGetAllBuilder dtoBuilder = UserResponseForGetAll.builder()
                     .userId(userEntity.getId())
                     .fullname(userEntity.getName() + " " + userEntity.getSurname())
                     .email(userEntity.getEmail())
-                    .teamName(userEntity.getTeam().getName())
                     .role(userEntity.getRole().getRoleEnum().name())
-                    .status(userEntity.getStatus().name())
-                    .build();
+                    .status(userEntity.getStatus().name());
+
+            if (userEntity.getTeam() != null) {
+                dtoBuilder.teamName(userEntity.getTeam().getName());
+            } else {
+                dtoBuilder.teamName(null);
+            }
+
+            UserResponseForGetAll dto = dtoBuilder.build();
             dtoList.add(dto);
         }
         return dtoList;
+
     }
 
 
