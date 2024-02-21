@@ -9,8 +9,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ProjectResponseForFilter {
-    @JsonProperty("report_id")
-    private Long reportId;
+    @JsonProperty("project_id")
+    private Long projectId;
     private String name;
     private List<UserResponse> user;
 }
