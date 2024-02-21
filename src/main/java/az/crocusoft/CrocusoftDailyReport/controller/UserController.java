@@ -11,6 +11,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,12 +51,12 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponseWithData("User update is successfully",userDto));
     }
     @GetMapping("/filter")
-    public ResponseEntity<List<UserResponseForFilter>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
-                                                                   @RequestParam(value = "lastName", required = false) String surname,
-                                                                   @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
-                                                                   @RequestParam(value = "projectIds", required = false) List<Long> projectIds
+    public ResponseEntity<List<UserDto>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
+                                                  @RequestParam(value = "lastName", required = false) String surname,
+                                                  @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
+                                                  @RequestParam(value = "projectIds", required = false) List<Long> projectIds
                                                                    ) {
-        List<UserResponseForFilter> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds);
+        List<UserDto> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds);
         return ResponseEntity.ok(filteredUsers);
     }
     @DeleteMapping("/delete/{id}")

@@ -148,7 +148,8 @@ public class UserService {
         return "Email sent... please verify account within 5 minute";
     }
 
-    public List<UserResponseForFilter> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds) {
+    public List<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds) {
+        System.out.println("bbbbbb");
         List<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds);
         List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
 
@@ -171,7 +172,7 @@ public class UserService {
         }
 
 
-        return mapToUserResponseDTOs(filteredAndCurrentUser);
+        return authenticationService.convertToDtoList(filteredAndCurrentUser);
     }
     private boolean hasRestrictedRole(Role role) {
         if (role == null) {

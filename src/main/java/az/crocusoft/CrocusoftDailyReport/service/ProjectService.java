@@ -157,7 +157,12 @@ public class ProjectService {
         userResponse.setId(userEntity.getId());
         userResponse.setName(userEntity.getName());
         userResponse.setSurname(userEntity.getSurname());
-        userResponse.setTeamName(userEntity.getTeam().getName()); // Assuming getTeam() method is available
+        userResponse.setTeamName(userEntity.getTeam().getName());
+        if (userEntity.getTeam() != null) {
+            userResponse.setTeamName(userEntity.getTeam().getName());
+        } else {
+            userResponse.setTeamName(null);
+        }// Assuming getTeam() method is available
         return userResponse;
     }
 }

@@ -211,6 +211,22 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
         userDto.setStatus(userEntity.getStatus().toString());
         return userDto;
     }
+    public List<UserDto> convertToDtoList(List<UserEntity> userEntitys) {
+        List<UserDto> userDtos=new ArrayList<>();
+        for(UserEntity user:userEntitys){
+            UserDto userDto=new UserDto();
+            userDto.setName(user.getName());
+            userDto.setSurname(user.getSurname());
+            userDto.setEmail(user.getEmail());
+            userDto.setRole(user.getRole());
+            userDto.setTeam(convertToTeamDto(user.getTeam()));
+            userDto.setProject(convertToProjectDtoList(user.getProjects()));
+            userDto.setStatus(user.getStatus().toString());
+            userDtos.add(userDto);
+        }
+
+        return userDtos;
+    }
     private TeamDto convertToTeamDto(Team team) {
         if (team == null) {
             return null;
