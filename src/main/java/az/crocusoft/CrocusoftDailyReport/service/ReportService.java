@@ -105,6 +105,7 @@ public class ReportService {
         reportDto.setEmployeeId(dailyReport.getUser().getId());
         reportDto.setDescription(dailyReport.getDescription());
         reportDto.setProjectId(dailyReport.getProject().getId());
+        reportDto.setCreateDate(dailyReport.getCreateDate());
 
         logger.info("Report retrieved successfully");
         return reportDto;
