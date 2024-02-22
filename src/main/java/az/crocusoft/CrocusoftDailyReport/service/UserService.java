@@ -206,8 +206,25 @@ public class UserService {
 
     public List<UserResponseForGetAll> getAllUsers() {
         List<UserEntity> userEntityList=userRepository.findAllByIsDeleted(false);
-        List<UserResponseForGetAll> userResponseForGetAllList=convertToDtoList(userEntityList);
-        return userResponseForGetAllList;
+        List<UserEntity> userEntities=new ArrayList<>();
+        String currentUsername = authenticationService.getSignedInUser().getEmail();
+        boolean isAdmin = false;
+        boolean isSuperAdminOrHead = false;
+
+        UserEntity currentUser = authenticationService.getSignedInUser();
+        if (currentUser != null && currentUser.getRole() != null) {
+            RoleEnum userRole = currentUser.getRole().getRoleEnum();
+            isAdmin = userRole == RoleEnum.ADMIN;
+            isSuperAdminOrHead = userRole == RoleEnum.SUPERADMIN || userRole == RoleEnum.HEAD;
+        }
+
+        for (UserEntity user : userEntityList) {
+
+            if (isAdmin && !hasRestrictedRole(user.getRole()) || isSuperAdminOrHead || user.getUsername().equals(currentUsername)) {
+                userEntities.add(user);
+            }
+        }
+        return convertToDtoList(userEntities);
     }
     public UserDto getById(Long userId) {
 
