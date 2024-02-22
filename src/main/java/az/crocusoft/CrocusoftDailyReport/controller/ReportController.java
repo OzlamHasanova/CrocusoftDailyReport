@@ -49,12 +49,13 @@ public class ReportController {
     }
     @GetMapping("/filter")
     public ResponseEntity<?> filterDailyReports(
-            @RequestParam(required = false) LocalDate createDate,
-            @RequestParam(required = false) List<Long> projectIds,
+            @RequestParam(value = "startDate",required = false) LocalDate startDate,
+            @RequestParam(value = "endDate",required = false) LocalDate endDate,
+            @RequestParam(value = "projectIds",required = false) List<Long> projectIds,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) {
-        Page<DailyReport> filteredReports = reportService.filterDailyReports( createDate, projectIds,  page, pageSize);
+        Page<DailyReport> filteredReports = reportService.filterDailyReports( startDate,endDate, projectIds,  page, pageSize);
 
         if (filteredReports.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("No matching reports found."));

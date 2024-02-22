@@ -28,11 +28,12 @@ public interface ReportRepository extends JpaRepository<DailyReport,Long> {
     );
     @Query("SELECT dr FROM DailyReport dr " +
             "JOIN dr.user u " +
-            "WHERE (:createDate IS NULL OR dr.createDate = :createDate) " +
+            "WHERE (COALESCE(:startDate, :endDate) IS NULL OR dr.createDate BETWEEN COALESCE(:startDate, dr.createDate) AND COALESCE(:endDate, dr.createDate)) " +
             "AND (:projectIds IS NULL OR dr.project.Id IN (:projectIds)) " +
             "AND (:userId IS NULL OR u.id = :userId)")
     Page<DailyReport> findByFilter(
-            @Param("createDate") LocalDate createDate,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
             @Param("projectIds") List<Long> projectIds,
             @Param("userId") Long userId,
             Pageable pageable
