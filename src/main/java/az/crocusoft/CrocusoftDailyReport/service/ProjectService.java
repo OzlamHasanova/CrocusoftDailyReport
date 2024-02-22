@@ -21,10 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -142,7 +139,7 @@ public class ProjectService {
     public Page<ProjectResponseForFilter> filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
         int newPage=page-1;
         Page<Project> projects;
-        Pageable pageable = PageRequest.of(newPage, pageSize);
+        Pageable pageable = PageRequest.of(newPage, pageSize, Sort.by("createDate").descending());
 
         if (projectName == null) {
             projects = projectRepository.findAll(pageable);

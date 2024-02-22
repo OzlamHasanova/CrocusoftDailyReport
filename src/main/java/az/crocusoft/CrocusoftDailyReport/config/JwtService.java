@@ -69,7 +69,6 @@ public class JwtService {
         String email = userDetails.getUsername();
 
         UserEntity user = userRepository.findByEmail(email);
-        String roleName = user.getRole().getRoleEnum().name();
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
