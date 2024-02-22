@@ -13,9 +13,9 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project,Long> {
 
-    @Query("SELECT p FROM Project p WHERE (:projectName IS NULL OR LOWER(p.name) LIKE %:projectName%)")
-    Page<Project> findByNameContainingIgnoreCase(@Param("projectName") String projectName,
-                                                 Pageable pageable);
+        @Query("SELECT p FROM Project p WHERE (:projectName IS NULL OR LOWER(p.name) LIKE %:projectName%) ORDER BY p.createDate desc ")
+    Page<Project> findByNameContainingIgnoreCaseOrderByCreationDateDesc(@Param("projectName") String projectName,
+                                                                        Pageable pageable);
 
     boolean existsProjectByName(String name);
 }

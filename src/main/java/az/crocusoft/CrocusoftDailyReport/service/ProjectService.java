@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -72,6 +73,7 @@ public class ProjectService {
             throw new ProjectAlreadyExistException("Project already created with the same name");
         }
         project.setName(projectRequest.getName());
+        project.setCreateDate(LocalDateTime.now());
 
         List<UserEntity> employees = new ArrayList<>();
         for (Long employeeId : projectRequest.getEmployeeIds()) {
@@ -145,7 +147,7 @@ public class ProjectService {
         if (projectName == null) {
             projects = projectRepository.findAll(pageable);
         } else {
-            projects = projectRepository.findByNameContainingIgnoreCase(projectName,pageable);
+            projects = projectRepository.findByNameContainingIgnoreCaseOrderByCreationDateDesc(projectName,pageable);
         }
 
         List<ProjectResponseForFilter> filteredProjectResponses = projects.stream()
