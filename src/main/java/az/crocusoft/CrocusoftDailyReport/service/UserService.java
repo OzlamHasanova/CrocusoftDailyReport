@@ -155,7 +155,7 @@ public class UserService {
     public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds,int page,int pageSize) {
         int newPage=page-1;
         Pageable pageable= PageRequest.of(newPage,pageSize);
-        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds,false,pageable);
+        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds,pageable);
         List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
 
         String currentUsername = authenticationService.getSignedInUser().getEmail();

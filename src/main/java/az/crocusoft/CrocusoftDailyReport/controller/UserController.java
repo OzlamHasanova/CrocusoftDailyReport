@@ -62,7 +62,7 @@ public class UserController {
         Page<UserDto> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds,page,pageSize);
         return ResponseEntity.ok(filteredUsers);
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.ok(new BaseResponse("User deleted successfully"));
@@ -73,9 +73,9 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse("status update is successfully"));
     }
     @PostMapping("/resetPassword/{id}")
-    public ResponseEntity<Void> updateUserPassword(@PathVariable Long id, @RequestParam String newPassword) {
+    public ResponseEntity<BaseResponse> updateUserPassword(@PathVariable Long id, @RequestParam String newPassword) {
         userService.updateUserPassword(id,newPassword);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new BaseResponse("Password reset completed successfully"));
     }
     @PostMapping("/changePassword")
     public ResponseEntity<String> changePassword( @RequestBody ChangePasswordRequest changePassword)  {

@@ -28,11 +28,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("surname") String surname,
             @Param("teamIds") List<Long> teamIds,
             @Param("projectIds") List<Long> projectIds,
-            boolean isDeleted,
             Pageable pageable);
 
   UserEntity findByEmail(String email);
-   UserEntity findByEmailAndIsDeletedAndStatus(String email,Boolean isDeleted,Status status);
+  UserEntity findByEmailAndIsDeletedAndStatus(String email,Boolean isDeleted,Status status);
 
   Optional<UserEntity> findByIdAndIsDeletedAndStatus(Long id,Boolean isDeleted,Status status);
 
