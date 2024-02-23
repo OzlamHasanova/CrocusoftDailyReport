@@ -3,6 +3,7 @@ package az.crocusoft.CrocusoftDailyReport.util;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
+import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import az.crocusoft.CrocusoftDailyReport.repository.RoleRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -69,7 +70,9 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
 
             UserEntity superAdmin = UserEntity.builder()
                     .email("admin")
-                    .password(passwordEncoder.encode("superadminpassword"))
+                    .password(passwordEncoder.encode("supera"))
+                    .status(Status.ACTIVE)
+                    .isDeleted(false)
                     .role(role)
                     .roleEnum(RoleEnum.SUPERADMIN)
                     .build();

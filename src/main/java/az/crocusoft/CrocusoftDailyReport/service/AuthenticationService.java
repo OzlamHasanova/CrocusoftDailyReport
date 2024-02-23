@@ -137,38 +137,7 @@ public class AuthenticationService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-//    public ResponseEntity<BaseResponse> refreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        if(!tokenRepository.existsTokenByToken(refreshToken)){
-//            throw new TokenNotFoundException("token not found");
-//        }
-//        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-////        final String refreshToken;
-//        final String userEmail;
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            logger.warn("Invalid or missing authorization header in refresh token request");
-//            return null;
-//        }
-//        refreshToken = authHeader.substring(7);
-//        userEmail = jwtService.extractUsername(refreshToken);
-//        if (userEmail != null) {
-//            var user = this.repository.findByEmail(userEmail);
-//            if (jwtService.isTokenValid(refreshToken, user)) {
-//                var accessToken = jwtService.generateToken(user);
-//                revokeAllUserTokens(user);
-//                saveUserToken(user, refreshToken);
-////                var authResponse = AuthenticationResponse.builder()
-//////                        .accessToken(accessToken)
-////                        .refreshToken(refreshToken)
-////                        .build();
-//               return new ResponseEntity<>(new BaseResponse(accessToken), HttpStatusCode.valueOf(HttpStatus.OK.value()));
-//            } else {
-//                logger.warn("Invalid refresh token for user: {}", userEmail);
-//            }
-//        } else {
-//            logger.warn("Failed to extract username from refresh token");
-//        }
-//        return null;
-//    }
+
 public RefreshTokenResponse refreshToken(String refreshToken) {
     String mail = jwtService.extractUsername(refreshToken);
     if (mail != null) {
