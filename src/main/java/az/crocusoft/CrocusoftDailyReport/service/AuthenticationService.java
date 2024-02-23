@@ -202,6 +202,7 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
     }
     public UserDto convertToDto(UserEntity userEntity) {
         UserDto userDto = new UserDto();
+        userDto.setId(userEntity.getId());
         userDto.setName(userEntity.getName());
         userDto.setSurname(userEntity.getSurname());
         userDto.setEmail(userEntity.getEmail());
@@ -215,6 +216,7 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
         List<UserDto> userDtos=new ArrayList<>();
         for(UserEntity user:userEntitys){
             UserDto userDto=new UserDto();
+            userDto.setId(user.getId());
             userDto.setName(user.getName());
             userDto.setSurname(user.getSurname());
             userDto.setEmail(user.getEmail());
