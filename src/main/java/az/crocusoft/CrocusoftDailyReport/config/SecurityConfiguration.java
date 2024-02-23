@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.PUT, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET,"/v1/api/reports/filter").hasRole("EMPLOYEE")
+                                .requestMatchers("v1/api/team/redis/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/v1/api/roles").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
 
