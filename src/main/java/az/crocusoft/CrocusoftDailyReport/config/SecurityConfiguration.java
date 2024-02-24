@@ -49,7 +49,11 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers("/v1/api/auth/**").permitAll()
-                               .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
+                                .requestMatchers("v1/api/team/redis/**").permitAll()
+                                .requestMatchers("/v1/api/user/verify-otp").permitAll()
+                                .requestMatchers("/v1/api/user/generate-otp").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/all").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
@@ -71,7 +75,6 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.PUT, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET, "/v1/api/reports/{id}").hasRole("EMPLOYEE")
                                 .requestMatchers(HttpMethod.GET,"/v1/api/reports/filter").hasRole("EMPLOYEE")
-                                .requestMatchers("v1/api/team/redis/**").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/v1/api/roles").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
 
