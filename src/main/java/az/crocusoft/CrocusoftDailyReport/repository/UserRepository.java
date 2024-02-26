@@ -31,6 +31,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             Pageable pageable);
 
   UserEntity findByEmail(String email);
+  UserEntity findByOtp(String otp);
+
   UserEntity findByEmailAndIsDeletedAndStatus(String email,Boolean isDeleted,Status status);
 
   Optional<UserEntity> findByIdAndIsDeletedAndStatus(Long id,Boolean isDeleted,Status status);

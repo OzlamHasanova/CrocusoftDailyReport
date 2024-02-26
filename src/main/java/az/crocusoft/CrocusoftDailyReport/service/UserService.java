@@ -195,7 +195,7 @@ public class UserService {
     }
 
     public BaseResponse verifyOtp(String otp) {
-        UserEntity user=authenticationService.getSignedInUser();
+        UserEntity user=userRepository.findByOtp(otp);
         if (Objects.equals(user.getOtp(), otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (5 * 60)) {
             user.setStatus(Status.ACTIVE);
