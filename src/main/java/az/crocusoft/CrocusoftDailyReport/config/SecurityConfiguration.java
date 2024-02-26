@@ -49,6 +49,7 @@ public class SecurityConfiguration {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 .requestMatchers("/v1/api/auth/**").permitAll()
+                                .requestMatchers("/v1/api/user/generate-otp").permitAll()
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")

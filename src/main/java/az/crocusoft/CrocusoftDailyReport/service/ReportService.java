@@ -150,6 +150,7 @@ public class ReportService {
         response.setDescription(dailyReport.getDescription());
         response.setUser(mapToUserResponse(dailyReport.getUser()));
         response.setProject(mapToProjectDto(dailyReport.getProject()));
+        response.setCreatDate(dailyReport.getCreateDate());
         return response;
     }
 
