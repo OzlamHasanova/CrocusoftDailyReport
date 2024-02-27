@@ -52,7 +52,7 @@ public class ReportController {
             @RequestParam(value = "startDate",required = false) LocalDate startDate,
             @RequestParam(value = "endDate",required = false) LocalDate endDate,
             @RequestParam(value = "projectIds",required = false) List<Long> projectIds,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) {
         Page<DailyReport> filteredReports = reportService.filterDailyReports( startDate,endDate, projectIds,  page, pageSize);
@@ -70,7 +70,7 @@ public class ReportController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) {
         Page<DailyReportFilterAdminResponse> searchResult = reportService.filterDailyReportsForAdmin(

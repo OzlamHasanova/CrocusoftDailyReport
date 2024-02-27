@@ -112,10 +112,11 @@ public class ReportService {
     }
 
     public Page<DailyReport> filterDailyReports(LocalDate startDate,LocalDate endDate, List<Long> projectIds, int page, int pageSize) {
+        int newPage=page-1;
         logger.info("Filtering daily reports");
         Long userId=authenticationService.getSignedInUser().getId();
 
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(newPage, pageSize);
         Page<DailyReport> filteredReports = reportRepository.findByFilter(startDate,endDate, projectIds, userId,pageable);
 
         logger.info("Daily reports filtered successfully");
@@ -132,8 +133,8 @@ public class ReportService {
 
     public Page<DailyReportFilterAdminResponse> filterDailyReportsForAdmin(LocalDate startDate, LocalDate endDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
         logger.info("Filtering daily reports for admin");
-
-        Pageable pageable = PageRequest.of(page, pageSize);
+        int newPage=page-1;
+        Pageable pageable = PageRequest.of(newPage, pageSize);
         Page<DailyReport> filteredReports = reportRepository.findByFilterCriteria(startDate, endDate, projectIds, userIds, pageable);
 
         List<DailyReportFilterAdminResponse> responseList = filteredReports.stream()
