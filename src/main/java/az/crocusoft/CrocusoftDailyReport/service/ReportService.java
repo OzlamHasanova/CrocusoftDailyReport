@@ -4,10 +4,7 @@ package az.crocusoft.CrocusoftDailyReport.service;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
-import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
-import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
-import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
-import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.*;
 import az.crocusoft.CrocusoftDailyReport.exception.DailyReportNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
@@ -111,7 +108,7 @@ public class ReportService {
         return reportDto;
     }
 
-    public Page<DailyReport> filterDailyReports(LocalDate startDate,LocalDate endDate, List<Long> projectIds, int page, int pageSize) {
+    public Page<ReportFilterResponseForUser> filterDailyReports(LocalDate startDate, LocalDate endDate, List<Long> projectIds, int page, int pageSize) {
         int newPage=page-1;
         logger.info("Filtering daily reports");
         Long userId=authenticationService.getSignedInUser().getId();
@@ -119,8 +116,11 @@ public class ReportService {
         Pageable pageable = PageRequest.of(newPage, pageSize);
         Page<DailyReport> filteredReports = reportRepository.findByFilter(startDate,endDate, projectIds, userId,pageable);
 
+        List<ReportFilterResponseForUser> responseList = filteredReports.stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
         logger.info("Daily reports filtered successfully");
-        return filteredReports;
+        return new PageImpl<>(responseList, pageable, filteredReports.getTotalElements());
     }
 
 
@@ -154,6 +154,15 @@ public class ReportService {
         response.setCreatDate(dailyReport.getCreateDate());
         return response;
     }
+    private ReportFilterResponseForUser mapToUserResponse(DailyReport dailyReport) {
+        ReportFilterResponseForUser response = new ReportFilterResponseForUser();
+        response.setId(dailyReport.getId());
+        response.setDescription(dailyReport.getDescription());
+        response.setProject(mapToProjectDto(dailyReport.getProject()));
+        response.setCreatDate(dailyReport.getCreateDate());
+        return response;
+    }
+
 
     private UserResponse mapToUserResponse(UserEntity user) {
         UserResponse response = new UserResponse();

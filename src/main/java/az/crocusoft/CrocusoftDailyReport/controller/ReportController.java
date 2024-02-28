@@ -6,18 +6,15 @@ import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
-import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ReportFilterResponseForUser;
 import az.crocusoft.CrocusoftDailyReport.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -48,18 +45,18 @@ public class ReportController {
         return ResponseEntity.ok(reportDto);
     }
     @GetMapping("/filter")
-    public ResponseEntity<?> filterDailyReports(
+    public ResponseEntity<Page<ReportFilterResponseForUser>> filterDailyReports(
             @RequestParam(value = "startDate",required = false) LocalDate startDate,
             @RequestParam(value = "endDate",required = false) LocalDate endDate,
             @RequestParam(value = "projectIds",required = false) List<Long> projectIds,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "2") int pageSize
     ) {
-        Page<DailyReport> filteredReports = reportService.filterDailyReports( startDate,endDate, projectIds,  page, pageSize);
+        Page<ReportFilterResponseForUser> filteredReports = reportService.filterDailyReports( startDate,endDate, projectIds,  page, pageSize);
 
-        if (filteredReports.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("No matching reports found."));
-        }
+//        if (filteredReports.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("No matching reports found."));
+//        }
 
         return ResponseEntity.ok(filteredReports);
     }
