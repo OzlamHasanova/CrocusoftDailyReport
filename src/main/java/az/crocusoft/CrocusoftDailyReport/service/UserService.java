@@ -55,10 +55,6 @@ public class UserService {
     private final AuthenticationService authenticationService;
 
 
-
-
-
-
     public UserDto update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
 
@@ -152,10 +148,10 @@ public class UserService {
         return "Email sent... please verify account within 5 minute";
     }
 
-    public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds,int page,int pageSize) {
-        int newPage=page-1;
-        Pageable pageable= PageRequest.of(newPage,pageSize);
-        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds,pageable);
+    public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds, int page, int pageSize) {
+        int newPage = page - 1;
+        Pageable pageable = PageRequest.of(newPage, pageSize);
+        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds, pageable);
         List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
 
         String currentUsername = authenticationService.getSignedInUser().getEmail();
@@ -169,24 +165,10 @@ public class UserService {
             isSuperAdminOrHead = userRole == RoleEnum.SUPERADMIN || userRole == RoleEnum.HEAD;
         }
 
-        for (UserEntity user : filteredUsers) {
-
-            if (isAdmin && !hasRestrictedRole(user.getRole()) || isSuperAdminOrHead || user.getUsername().equals(currentUsername)) {
-                filteredAndCurrentUser.add(user);
-            }
-        }
-
 
         return new PageImpl<>(authenticationService.convertToDtoList(filteredAndCurrentUser));
     }
-    private boolean hasRestrictedRole(Role role) {
-        if (role == null) {
-            return false;
-        }
 
-        String roleName = role.getRoleEnum().name();
-        return roleName.equals("ADMIN") || roleName.equals("SUPERADMIN") || roleName.equals("HEAD");
-    }
 
     private List<UserResponseForFilter> mapToUserResponseDTOs(List<UserEntity> users) {
         return users.stream()
@@ -218,12 +200,6 @@ public class UserService {
             isSuperAdminOrHead = userRole == RoleEnum.SUPERADMIN || userRole == RoleEnum.HEAD;
         }
 
-        for (UserEntity user : userEntityList) {
-
-            if (isAdmin && !hasRestrictedRole(user.getRole()) || isSuperAdminOrHead || user.getUsername().equals(currentUsername)) {
-                userEntities.add(user);
-            }
-        }
         return convertToDtoList(userEntities);
     }
     public UserDto getById(Long userId) {

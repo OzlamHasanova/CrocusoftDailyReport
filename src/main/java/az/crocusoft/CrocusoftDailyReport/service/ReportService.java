@@ -63,7 +63,7 @@ public class ReportService {
         return response;
     }
 
-    public DailyReportResponse updateReport(Long id, ReportUpdateDto description) {
+    public DailyReportResponse updateReport(Long id, ReportUpdateDto reportUpdateDto) {
         logger.info("Updating report with id: {}", id);
 
         DailyReport existingReport = reportRepository.findById(id)
@@ -74,7 +74,7 @@ public class ReportService {
             throw new UpdateTimeException("The report's creation date cannot be updated.");
         }
 
-        existingReport.setDescription(description.getDescription());
+        existingReport.setDescription(reportUpdateDto.getDescription());
         reportRepository.save(existingReport);
 
         DailyReportResponse response = mapToDailyReportResponse(existingReport);
@@ -83,26 +83,17 @@ public class ReportService {
         return response;
     }
 
-    public void deleteReport(Long id) {
-        logger.info("Deleting report with id: {}", id);
-
-        DailyReport report = reportRepository.findById(id).get();
-        reportRepository.delete(report);
-
-        logger.info("Report deleted successfully");
-    }
-
-    public ReportDto getById(Long id) {
+    public ReportFilterResponseForUser getById(Long id) {
         logger.info("Getting report by id: {}", id);
 
         DailyReport dailyReport = reportRepository.findById(id)
                 .orElseThrow(() -> new DailyReportNotFoundException("Daily report not found with id: " + id));
 
-        ReportDto reportDto = new ReportDto();
-        reportDto.setEmployeeId(dailyReport.getUser().getId());
+        ReportFilterResponseForUser reportDto = new ReportFilterResponseForUser();
+        reportDto.setId(dailyReport.getUser().getId());
         reportDto.setDescription(dailyReport.getDescription());
-        reportDto.setProjectId(dailyReport.getProject().getId());
-        reportDto.setCreateDate(dailyReport.getCreateDate());
+        reportDto.setProject(mapToProjectDto(projectRepository.findById(dailyReport.getProject().getId()).get()));
+        reportDto.setCreatDate(dailyReport.getCreateDate());
 
         logger.info("Report retrieved successfully");
         return reportDto;

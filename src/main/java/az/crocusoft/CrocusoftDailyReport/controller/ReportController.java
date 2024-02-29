@@ -40,8 +40,8 @@ public class ReportController {
         return ResponseEntity.ok(reportService.updateReport(id, description));
     }
     @GetMapping("/{id}")
-    public ResponseEntity<ReportDto> getById(@PathVariable Long id){
-        ReportDto reportDto=reportService.getById(id);
+    public ResponseEntity<ReportFilterResponseForUser> getById(@PathVariable Long id){
+        ReportFilterResponseForUser reportDto=reportService.getById(id);
         return ResponseEntity.ok(reportDto);
     }
     @GetMapping("/filter")
@@ -97,9 +97,5 @@ public class ReportController {
         return ResponseEntity.ok(searchResult);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
-        reportService.deleteReport(id);
-        return ResponseEntity.noContent().build();
-    }
+
 }

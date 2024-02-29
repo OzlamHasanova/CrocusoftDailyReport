@@ -30,16 +30,7 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-//    @Override
-//    public void run(String... args) throws Exception {
-//        for (RoleEnum roleName : RoleEnum.values()) {
-//            if (!roleRepository.existsByRoleEnum(roleName)) {
-//                Role role = new Role();
-//                role.setRoleEnum(roleName);
-//                roleRepository.save(role);
-//            }
-//        }
-//    }
+
 
 
     @Override
@@ -48,7 +39,6 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
 
         boolean isRoleDataInitialized = false;
 
-        // Check if role data is already initialized
         if (roleRepository.count() == 0) {
             isRoleDataInitialized = true;
         }
