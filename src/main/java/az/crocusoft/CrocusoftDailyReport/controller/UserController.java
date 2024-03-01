@@ -1,11 +1,13 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
+import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponseWithData;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ChangePasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ForgotPasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
+import az.crocusoft.CrocusoftDailyReport.dto.response.UserFilterResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
@@ -49,15 +51,14 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponseWithData("User update is successfully",userDto));
     }
     @GetMapping("/filter")
-    public ResponseEntity<Page<UserDto>> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
-                                                     @RequestParam(value = "lastName", required = false) String surname,
-                                                     @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
-                                                     @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
-                                                     @RequestParam(defaultValue = "1") int page,
-                                                     @RequestParam(defaultValue = "2") int pageSize
+    public ResponseEntity<UserFilterResponse> filterUsers(@RequestParam(value = "firstName", required = false) String firstName,
+                                                          @RequestParam(value = "lastName", required = false) String surname,
+                                                          @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
+                                                          @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
+                                                          @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+                                                          @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
                                                                    ) {
-        Page<UserDto> filteredUsers = userService.filterUsers(firstName, surname,teamIds, projectIds,page,pageSize);
-        return ResponseEntity.ok(filteredUsers);
+        return ResponseEntity.ok(userService.filterUsers(firstName, surname,teamIds, projectIds,page,size));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> delete(@PathVariable Long id) {

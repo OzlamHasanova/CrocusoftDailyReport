@@ -1,7 +1,9 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 
 
+import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
+import az.crocusoft.CrocusoftDailyReport.dto.ReportFilterResponseWithPaginationForAdmin;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.*;
@@ -9,6 +11,7 @@ import az.crocusoft.CrocusoftDailyReport.exception.DailyReportNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UpdateTimeException;
 import az.crocusoft.CrocusoftDailyReport.model.DailyReport;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
+import az.crocusoft.CrocusoftDailyReport.model.Team;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import az.crocusoft.CrocusoftDailyReport.repository.ProjectRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.ReportRepository;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,19 +103,21 @@ public class ReportService {
         return reportDto;
     }
 
-    public Page<ReportFilterResponseForUser> filterDailyReports(LocalDate startDate, LocalDate endDate, List<Long> projectIds, int page, int pageSize) {
-        int newPage=page-1;
+    public ReportFilterResponseWithPaginationForUser filterDailyReports(LocalDate startDate, LocalDate endDate, List<Long> projectIds, int page, int pageSize) {
         logger.info("Filtering daily reports");
         Long userId=authenticationService.getSignedInUser().getId();
+        page = Math.max(page, Integer.parseInt(PaginationConstants.PAGE_NUMBER));
+        pageSize = pageSize < 1 ? Integer.parseInt(PaginationConstants.PAGE_SIZE) : pageSize;
+        pageSize = Math.min(pageSize, 550);
 
-        Pageable pageable = PageRequest.of(newPage, pageSize);
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<DailyReport> filteredReports = reportRepository.findByFilter(startDate,endDate, projectIds, userId,pageable);
 
         List<ReportFilterResponseForUser> responseList = filteredReports.stream()
                 .map(this::mapToUserResponse)
                 .collect(Collectors.toList());
         logger.info("Daily reports filtered successfully");
-        return new PageImpl<>(responseList, pageable, filteredReports.getTotalElements());
+        return new ReportFilterResponseWithPaginationForUser(responseList, filteredReports.getTotalPages(), filteredReports.getTotalElements(),filteredReports.hasNext());
     }
 
 
@@ -122,10 +128,13 @@ public class ReportService {
         return response;
     }
 
-    public Page<DailyReportFilterAdminResponse> filterDailyReportsForAdmin(LocalDate startDate, LocalDate endDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
+    public ReportFilterResponseWithPaginationForAdmin filterDailyReportsForAdmin(LocalDate startDate, LocalDate endDate, List<Long> projectIds, List<Long> userIds, int page, int pageSize) {
         logger.info("Filtering daily reports for admin");
-        int newPage=page-1;
-        Pageable pageable = PageRequest.of(newPage, pageSize);
+        page = Math.max(page, Integer.parseInt(PaginationConstants.PAGE_NUMBER));
+        pageSize = pageSize < 1 ? Integer.parseInt(PaginationConstants.PAGE_SIZE) : pageSize;
+        pageSize = Math.min(pageSize, 550);
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
         Page<DailyReport> filteredReports = reportRepository.findByFilterCriteria(startDate, endDate, projectIds, userIds, pageable);
 
         List<DailyReportFilterAdminResponse> responseList = filteredReports.stream()
@@ -133,7 +142,8 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         logger.info("Daily reports filtered successfully for admin");
-        return new PageImpl<>(responseList, pageable, filteredReports.getTotalElements());
+        return new ReportFilterResponseWithPaginationForAdmin(responseList, filteredReports.getTotalPages(), filteredReports.getTotalElements(),filteredReports.hasNext());
+
     }
 
     private DailyReportFilterAdminResponse mapToAdminResponse(DailyReport dailyReport) {
@@ -160,7 +170,9 @@ public class ReportService {
         response.setId(user.getId());
         response.setName(user.getName());
         response.setSurname(user.getSurname());
-        response.setTeamName(user.getTeam().getName());
+        response.setTeamName(Optional.ofNullable(user.getTeam())
+                .map(Team::getName)
+                .orElse(null));
 
         return response;
     }
@@ -172,15 +184,21 @@ public class ReportService {
         return dto;
     }
 
-    public Page<DailyReportFilterAdminResponse> generateDailyReportExcel(
+    public ReportFilterResponseWithPaginationForAdmin generateDailyReportExcel(
             HttpServletResponse httpServletResponse,
             LocalDate startDate,
             LocalDate endDate,
             List<Long> projectIds,
             List<Long> userIds,
-            Pageable pageable) throws IOException {
+            int page,
+            int pageSize
+            ) throws IOException {
         logger.info("Generating daily report Excel");
+        page = Math.max(page, Integer.parseInt(PaginationConstants.PAGE_NUMBER));
+        pageSize = pageSize < 1 ? Integer.parseInt(PaginationConstants.PAGE_SIZE) : pageSize;
+        pageSize = Math.min(pageSize, 550);
 
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
 
         Page<DailyReport> reports = reportRepository.findByFilterCriteria(
                 startDate,
@@ -223,7 +241,6 @@ public class ReportService {
         List<DailyReportFilterAdminResponse> responseList = reports.stream()
                 .map(this::mapToAdminResponse)
                 .collect(Collectors.toList());
-        return new PageImpl<>(responseList, pageable, reports.getTotalElements());
-
+        return new ReportFilterResponseWithPaginationForAdmin(responseList, reports.getTotalPages(), reports.getTotalElements(),reports.hasNext());
     }
 }

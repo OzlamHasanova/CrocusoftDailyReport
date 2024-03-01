@@ -1,12 +1,15 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
+import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
+import az.crocusoft.CrocusoftDailyReport.dto.ReportFilterResponseWithPaginationForAdmin;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ReportFilterResponseForUser;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ReportFilterResponseWithPaginationForUser;
 import az.crocusoft.CrocusoftDailyReport.service.ReportService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,56 +48,44 @@ public class ReportController {
         return ResponseEntity.ok(reportDto);
     }
     @GetMapping("/filter")
-    public ResponseEntity<Page<ReportFilterResponseForUser>> filterDailyReports(
+    public ResponseEntity<ReportFilterResponseWithPaginationForUser> filterDailyReports(
             @RequestParam(value = "startDate",required = false) LocalDate startDate,
             @RequestParam(value = "endDate",required = false) LocalDate endDate,
             @RequestParam(value = "projectIds",required = false) List<Long> projectIds,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "2") int pageSize
+            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
-        Page<ReportFilterResponseForUser> filteredReports = reportService.filterDailyReports( startDate,endDate, projectIds,  page, pageSize);
-
-//        if (filteredReports.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse("No matching reports found."));
-//        }
-
-        return ResponseEntity.ok(filteredReports);
+        return ResponseEntity.ok(reportService.filterDailyReports( startDate,endDate, projectIds,  page, size));
     }
 
     @GetMapping("/filter-admin")
-    public ResponseEntity<Page<DailyReportFilterAdminResponse>> filterDailyReportsForAdmin(
+    public ResponseEntity<ReportFilterResponseWithPaginationForAdmin> filterDailyReportsForAdmin(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "2") int pageSize
+            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
-        Page<DailyReportFilterAdminResponse> searchResult = reportService.filterDailyReportsForAdmin(
-                 startDate,endDate, projectIds, userIds, page,pageSize
-        );
-        return ResponseEntity.ok(searchResult);
+        return ResponseEntity.ok(reportService.filterDailyReportsForAdmin( startDate,endDate, projectIds,userIds, page, size));
     }
     @GetMapping("/filter-and-export-excel")
-    public ResponseEntity<Page<DailyReportFilterAdminResponse>> filterDailyReportsAndExportExcel(
+    public ResponseEntity<ReportFilterResponseWithPaginationForAdmin> filterDailyReportsAndExportExcel(
             HttpServletResponse response,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "2") int pageSize
+            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) throws IOException {
-        Pageable pageable = PageRequest.of(page, pageSize);
 
         response.setContentType("application/octet-stream");
         String headerKey="Content-Disposition";
         String headerValue="attachment;filename=Daily-reports.xls";
         response.setHeader(headerKey,headerValue);
-        Page<DailyReportFilterAdminResponse> searchResult = reportService.generateDailyReportExcel(
-               response, startDate,endDate, projectIds, userIds,pageable
-        );
-        return ResponseEntity.ok(searchResult);
+
+        return ResponseEntity.ok(reportService.generateDailyReportExcel(response, startDate,endDate, projectIds,userIds, page, size));
     }
 
 

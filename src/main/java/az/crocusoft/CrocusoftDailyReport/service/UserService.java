@@ -1,5 +1,6 @@
 package az.crocusoft.CrocusoftDailyReport.service;
 
+import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import az.crocusoft.CrocusoftDailyReport.dto.base.BaseResponse;
@@ -7,6 +8,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.request.ChangePasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ForgotPasswordRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.request.UserRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
+import az.crocusoft.CrocusoftDailyReport.dto.response.UserFilterResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
@@ -149,15 +151,20 @@ public class UserService {
         return "Email sent... please verify account within 5 minute";
     }
 
-    public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds, int page, int pageSize) {
+    public UserFilterResponse filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds, int page, int pageSize) {
         UserEntity user=authenticationService.getSignedInUser();
-        Pageable pageable=PageRequest.of(page,pageSize);
+        page = Math.max(page, Integer.parseInt(PaginationConstants.PAGE_NUMBER));
+        pageSize = pageSize < 1 ? Integer.parseInt(PaginationConstants.PAGE_SIZE) : pageSize;
+        pageSize = Math.min(pageSize, 550);
+
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
         if(user.getRoleEnum().equals(RoleEnum.SUPERADMIN) || user.getRoleEnum().equals(RoleEnum.HEAD)) {
         Page<UserEntity> filteredUsers=userRepository.filterUsers(name,surname,teamIds,projectIds,pageable);
-            return new PageImpl<>(authenticationService.convertToDtoList(filteredUsers));
+            return new UserFilterResponse(authenticationService.convertToDtoList(filteredUsers), filteredUsers.getTotalPages(), filteredUsers.getTotalElements(),filteredUsers.hasNext());
         }
         Page<UserEntity> filteredUserForAdmin =userRepository.filterAdmin(name,surname,teamIds,projectIds, user.getId(), pageable);
-        return new PageImpl<>(authenticationService.convertToDtoList(filteredUserForAdmin));
+        return new UserFilterResponse(authenticationService.convertToDtoList(filteredUserForAdmin), filteredUserForAdmin.getTotalPages(), filteredUserForAdmin.getTotalElements(),filteredUserForAdmin.hasNext());
 
 
     }
