@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -149,32 +150,18 @@ public class UserService {
     }
 
     public Page<UserDto> filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds, int page, int pageSize) {
-        int newPage = page - 1;
-        Pageable pageable = PageRequest.of(newPage, pageSize);
-        Page<UserEntity> filteredUsers = userRepository.filterUsers(name, surname, teamIds, projectIds, pageable);
-        List<UserEntity> filteredAndCurrentUser = new ArrayList<>();
-
-        String currentUsername = authenticationService.getSignedInUser().getEmail();
-        boolean isAdmin = false;
-        boolean isSuperAdminOrHead = false;
-
-        UserEntity currentUser = authenticationService.getSignedInUser();
-        if (currentUser != null && currentUser.getRole() != null) {
-            RoleEnum userRole = currentUser.getRole().getRoleEnum();
-            isAdmin = userRole == RoleEnum.ADMIN;
-            isSuperAdminOrHead = userRole == RoleEnum.SUPERADMIN || userRole == RoleEnum.HEAD;
+        UserEntity user=authenticationService.getSignedInUser();
+        Pageable pageable=PageRequest.of(page,pageSize);
+        if(user.getRoleEnum().equals(RoleEnum.SUPERADMIN) || user.getRoleEnum().equals(RoleEnum.HEAD)) {
+        Page<UserEntity> filteredUsers=userRepository.filterUsers(name,surname,teamIds,projectIds,pageable);
+            return new PageImpl<>(authenticationService.convertToDtoList(filteredUsers));
         }
+        Page<UserEntity> filteredUserForAdmin =userRepository.filterAdmin(name,surname,teamIds,projectIds, user.getId(), pageable);
+        return new PageImpl<>(authenticationService.convertToDtoList(filteredUserForAdmin));
 
 
-        return new PageImpl<>(authenticationService.convertToDtoList(filteredAndCurrentUser));
     }
 
-
-    private List<UserResponseForFilter> mapToUserResponseDTOs(List<UserEntity> users) {
-        return users.stream()
-                .map(user -> new UserResponseForFilter(user.getName(), user.getSurname(), user.getEmail()))
-                .collect(Collectors.toList());
-    }
 
     public BaseResponse verifyOtp(String otp) {
         UserEntity user=userRepository.findByOtp(otp);
@@ -238,9 +225,7 @@ public class UserService {
             dtoList.add(dto);
         }
         return dtoList;
-
     }
-
 
 }
 

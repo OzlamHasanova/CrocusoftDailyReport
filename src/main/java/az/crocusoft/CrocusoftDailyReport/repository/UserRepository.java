@@ -30,6 +30,20 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("projectIds") List<Long> projectIds,
             Pageable pageable);
 
+    @Query("SELECT u FROM UserEntity u " +
+            "WHERE u.isDeleted = false " +
+            "AND (:name IS NULL OR u.name = :name) " +
+            "AND (:surname IS NULL OR u.surname = :surname) " +
+            "AND (:teamIds IS NULL OR u.team.Id IN :teamIds) " +
+            "AND (:projectIds IS NULL OR EXISTS (SELECT p FROM u.projects p WHERE p.Id IN :projectIds))"+
+    " AND (u.roleEnum ='EMPLOYEE' OR (u.roleEnum='ADMIN' AND u.id=:userId))")
+    Page<UserEntity> filterAdmin(
+            @Param("name") String name,
+            @Param("surname") String surname,
+            @Param("teamIds") List<Long> teamIds,
+            @Param("projectIds") List<Long> projectIds,
+            @Param("userId") Long userId,
+            Pageable pageable);
   UserEntity findByEmail(String email);
   UserEntity findByOtp(String otp);
 

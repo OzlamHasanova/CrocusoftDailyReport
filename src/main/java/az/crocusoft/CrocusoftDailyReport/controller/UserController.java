@@ -33,9 +33,7 @@ public class UserController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
     }
-
     @GetMapping("/all")
     public ResponseEntity<List<UserResponseForGetAll>> getAllUsers() {
         List<UserResponseForGetAll> user = userService.getAllUsers();
@@ -45,7 +43,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<BaseResponseWithData> update(@PathVariable Long id, @RequestBody UserRequest userRequest) {
          UserDto userDto=userService.update(id, userRequest);

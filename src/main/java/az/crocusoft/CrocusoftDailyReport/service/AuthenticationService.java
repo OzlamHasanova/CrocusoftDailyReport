@@ -24,6 +24,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -181,7 +183,7 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
         userDto.setStatus(userEntity.getStatus().toString());
         return userDto;
     }
-    public List<UserDto> convertToDtoList(List<UserEntity> userEntitys) {
+    public List<UserDto> convertToDtoList(Page<UserEntity> userEntitys) {
         List<UserDto> userDtos=new ArrayList<>();
         for(UserEntity user:userEntitys){
             UserDto userDto=new UserDto();
