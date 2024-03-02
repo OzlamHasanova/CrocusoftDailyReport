@@ -11,6 +11,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserFilterResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
+import az.crocusoft.CrocusoftDailyReport.exception.UnsupportedOperationException;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
@@ -79,7 +80,9 @@ public class UserService {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-
+        if(user.getRoleEnum().name().equals("SUPERADMIN")||user.getRoleEnum().name().equals("HEAD")){
+            throw new UnsupportedOperationException("You cannot delete this user");
+        }
         user.setIsDeleted(true);
         userRepository.save(user);
 
