@@ -52,7 +52,7 @@ public class ReportController {
             @RequestParam(value = "startDate",required = false) LocalDate startDate,
             @RequestParam(value = "endDate",required = false) LocalDate endDate,
             @RequestParam(value = "projectIds",required = false) List<Long> projectIds,
-            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
         return ResponseEntity.ok(reportService.filterDailyReports( startDate,endDate, projectIds,  page, size));
@@ -64,7 +64,7 @@ public class ReportController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
         return ResponseEntity.ok(reportService.filterDailyReportsForAdmin( startDate,endDate, projectIds,userIds, page, size));
@@ -76,7 +76,7 @@ public class ReportController {
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
             @RequestParam(value = "userIds", required = false) List<Long> userIds,
-            @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+            @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) throws IOException {
 

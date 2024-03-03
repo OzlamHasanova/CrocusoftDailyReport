@@ -55,7 +55,7 @@ public class UserController {
                                                           @RequestParam(value = "lastName", required = false) String surname,
                                                           @RequestParam(value = "teamIds", required = false) List<Long> teamIds,
                                                           @RequestParam(value = "projectIds", required = false) List<Long> projectIds,
-                                                          @RequestParam(name = "pageNumber", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+                                                          @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
                                                           @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
                                                                    ) {
         return ResponseEntity.ok(userService.filterUsers(firstName, surname,teamIds, projectIds,page,size));
