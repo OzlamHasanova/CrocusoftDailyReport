@@ -85,7 +85,7 @@ public class UserController {
         return new ResponseEntity<>(userService.verifyAccount(forgotPasswordRequest), HttpStatus.OK);
     }
     @PostMapping("/generate-otp")
-    public ResponseEntity<String> forgotPasswordRegenerateOtp(@RequestParam String email) {
+    public ResponseEntity<BaseResponse> forgotPasswordRegenerateOtp(@RequestParam String email) {
         return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
     }
     @PostMapping("/verify-otp")

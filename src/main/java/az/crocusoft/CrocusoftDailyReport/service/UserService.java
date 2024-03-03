@@ -11,6 +11,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserFilterResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
+import az.crocusoft.CrocusoftDailyReport.exception.PasswordChangeIsFalse;
 import az.crocusoft.CrocusoftDailyReport.exception.UnsupportedOperationException;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
@@ -126,19 +127,21 @@ public class UserService {
     }
     public BaseResponse verifyAccount(ForgotPasswordRequest forgotPasswordRequest) {
         UserEntity user=userRepository.findByEmailAndIsDeletedAndStatus(forgotPasswordRequest.getEmail(),false,Status.ACTIVE);
+        if(user.getOtp()==null){
+            throw new PasswordChangeIsFalse("Password change is false");
+        }
         if (verifyOtp(user.getOtp()).equals(new BaseResponse("verify is success"))) {
-            user.setStatus(Status.ACTIVE);
             if(Objects.equals(forgotPasswordRequest.getNewPassword(), forgotPasswordRequest.getNewPasswordAgain())){
                 user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getNewPassword()));
+                user.setOtp(null);
                 userRepository.save(user);
             }
-
-            return new BaseResponse("OTP verified you can login");
+            return new BaseResponse("Password change is success");
         }
         return new BaseResponse("Please regenerate otp and try again");
     }
 
-    public String regenerateOtp(String email) {
+    public BaseResponse regenerateOtp(String email) {
         UserEntity user = userRepository.findByEmail(email);
                // .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         String otp = otpUtil.generateOtp();
@@ -151,7 +154,7 @@ public class UserService {
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
         userRepository.save(user);
-        return "Email sent... please verify account within 5 minute";
+        return new BaseResponse("Email sent... please verify account within 5 minute");
     }
 
     public UserFilterResponse filterUsers(String name, String surname, List<Long> teamIds, List<Long> projectIds, int page, int pageSize) {

@@ -1,8 +1,10 @@
 package az.crocusoft.CrocusoftDailyReport.controller;
 
+import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
 import az.crocusoft.CrocusoftDailyReport.dto.ProjectDto;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForFilter;
+import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForSearch;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +40,10 @@ public class ProjectController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<ProjectResponseForFilter>> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName,
-                                                                               @RequestParam(defaultValue = "1") int page,
-                                                                               @RequestParam(defaultValue = "2") int pageSize) {
-        Page<ProjectResponseForFilter> filteredProjects = projectService.filterProjectsByName(projectName,page,pageSize);
-        return ResponseEntity.ok(filteredProjects);
+    public ResponseEntity<ProjectResponseForSearch> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName,
+                                                                         @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
+                                                                         @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size) {
+        return ResponseEntity.ok(projectService.filterProjectsByName(projectName,page,size));
     }
 
 }

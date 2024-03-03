@@ -71,7 +71,7 @@ public class AuthenticationService {
 
         if (repository.existsByEmail(request.getEmail())) {
             logger.warn("Username is already taken: {}", request.getEmail());
-            return new ResponseEntity<>(new BaseResponse("Username is taken!"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new BaseResponse("Username is already taken!"), HttpStatus.BAD_REQUEST);
         }
         var user = UserEntity.builder()
                 .name(request.getFirstname())

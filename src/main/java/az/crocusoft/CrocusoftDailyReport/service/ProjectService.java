@@ -2,9 +2,7 @@ package az.crocusoft.CrocusoftDailyReport.service;
 
 import az.crocusoft.CrocusoftDailyReport.dto.ProjectDto;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
-import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponse;
-import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectResponseForFilter;
-import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponse;
+import az.crocusoft.CrocusoftDailyReport.dto.response.*;
 import az.crocusoft.CrocusoftDailyReport.exception.EmployeeNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.ProjectAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.exception.ProjectNotFoundException;
@@ -136,10 +134,9 @@ public class ProjectService {
         return new ProjectResponse(savedProject.getName(), employeeResponses);
     }
 
-    public Page<ProjectResponseForFilter> filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
-        int newPage=page-1;
+    public ProjectResponseForSearch filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
         Page<Project> projects;
-        Pageable pageable = PageRequest.of(newPage, pageSize, Sort.by("createDate").descending());
+        Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by("createDate").descending());
 
         if (projectName == null) {
             projects = projectRepository.findAll(pageable);
@@ -155,9 +152,8 @@ public class ProjectService {
             logger.warn("Project not found with name: {}", projectName);
             throw new ProjectNotFoundException("Project not found");
         }
+        return new ProjectResponseForSearch(filteredProjectResponses, projects.getTotalPages(), projects.getTotalElements(),projects.hasNext());
 
-        logger.info("Filtered projects by name: {}", projectName);
-        return new PageImpl<>(filteredProjectResponses);
     }
     public List<UserResponse> convertUserEntitiesToResponses(List<UserEntity> userEntities) {
         return userEntities.stream()
