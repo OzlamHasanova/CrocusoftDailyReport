@@ -54,7 +54,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/v1/api/user/forgot-password").permitAll()
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
-                               .requestMatchers(HttpMethod.GET, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")
+                               .requestMatchers(HttpMethod.GET, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/all").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.PUT, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")
                                .requestMatchers(HttpMethod.DELETE, "/v1/api/user/delete/{id}").hasAnyRole("SUPERADMIN","ADMIN")
