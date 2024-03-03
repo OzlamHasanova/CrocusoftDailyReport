@@ -5,7 +5,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.DailyReportFilterAdminResp
 import java.util.List;
 
 public record ReportFilterResponseWithPaginationForAdmin(
-        List<DailyReportFilterAdminResponse> userResponseList,
+        List<DailyReportFilterAdminResponse> content,
         int totalPages,
         long TotalElements,
         boolean hasNext

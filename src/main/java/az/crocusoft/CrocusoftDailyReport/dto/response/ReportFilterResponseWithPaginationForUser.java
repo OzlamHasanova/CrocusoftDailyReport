@@ -5,7 +5,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
 import java.util.List;
 
 public record ReportFilterResponseWithPaginationForUser(
-        List<ReportFilterResponseForUser> reportFilterResponseForUsers,
+        List<ReportFilterResponseForUser> content,
         int totalPages,
         long TotalElements,
         boolean hasNext
