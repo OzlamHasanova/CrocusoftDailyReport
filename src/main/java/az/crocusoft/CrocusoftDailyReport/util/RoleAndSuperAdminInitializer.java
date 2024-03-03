@@ -60,7 +60,7 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
 
             UserEntity superAdmin = UserEntity.builder()
                     .email("admin")
-                    .password(passwordEncoder.encode("supera"))
+                    .password(passwordEncoder.encode("superadminpassword"))
                     .status(Status.ACTIVE)
                     .isDeleted(false)
                     .role(role)
