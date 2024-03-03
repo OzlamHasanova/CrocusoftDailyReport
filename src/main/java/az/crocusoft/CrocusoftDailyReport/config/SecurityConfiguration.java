@@ -51,6 +51,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/v1/api/auth/**").permitAll()
                                 .requestMatchers("/v1/api/user/generate-otp").permitAll()
                                 .requestMatchers("/v1/api/user/verify-otp").permitAll()
+                                .requestMatchers("/v1/api/user/forgot-password").permitAll()
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/filter").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user").hasAnyRole("SUPERADMIN","ADMIN","HEAD")
                                .requestMatchers(HttpMethod.GET, "/v1/api/user/{id}").hasAnyRole("SUPERADMIN","ADMIN")

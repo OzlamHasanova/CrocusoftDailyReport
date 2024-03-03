@@ -125,7 +125,7 @@ public class UserService {
 
     }
     public BaseResponse verifyAccount(ForgotPasswordRequest forgotPasswordRequest) {
-        UserEntity user=authenticationService.getSignedInUser();
+        UserEntity user=userRepository.findByEmailAndIsDeletedAndStatus(forgotPasswordRequest.getEmail(),false,Status.ACTIVE);
         if (verifyOtp(user.getOtp()).equals(new BaseResponse("verify is success"))) {
             user.setStatus(Status.ACTIVE);
             if(Objects.equals(forgotPasswordRequest.getNewPassword(), forgotPasswordRequest.getNewPasswordAgain())){
