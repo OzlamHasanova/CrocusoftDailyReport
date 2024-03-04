@@ -211,7 +211,9 @@ public class UserService {
         for (UserEntity userEntity : userEntityList) {
             UserResponseForGetAll.UserResponseForGetAllBuilder dtoBuilder = UserResponseForGetAll.builder()
                     .userId(userEntity.getId())
-                    .fullname(userEntity.getName() + " " + userEntity.getSurname())
+                    .name(userEntity.getName())
+                    .surname(userEntity.getSurname())
+                           
                     .email(userEntity.getEmail())
                     .role(userEntity.getRole().getRoleEnum().name())
                     .status(userEntity.getStatus().name());

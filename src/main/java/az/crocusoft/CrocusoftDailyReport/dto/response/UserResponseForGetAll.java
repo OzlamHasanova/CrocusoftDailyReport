@@ -10,7 +10,8 @@ import lombok.Data;
 public class UserResponseForGetAll {
     @JsonProperty("user_id")
     private Long userId;
-    private String fullname;
+    private String name;
+    private String surname;
     private String email;
     private String teamName;
     private String status;
