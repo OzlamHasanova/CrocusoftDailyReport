@@ -28,7 +28,7 @@ public class RegisterRequest {
 
     @Email(message = "Invalid email format")
     @Size(max = 100, message = "Email cannot exceed 100 characters")
-    //@Pattern(regexp = ".+@crocusoft\\..+", message = "Email must be from crocusoft domain")
+    @Pattern(regexp = ".+@crocusoft\\..+", message = "Email must be from crocusoft domain")
     private String email;
 
     @Size(min = 6, message = "Password must be at least 6 characters long")

@@ -1,4 +1,5 @@
 package az.crocusoft.CrocusoftDailyReport.service;
+
 import az.crocusoft.CrocusoftDailyReport.config.JwtService;
 import az.crocusoft.CrocusoftDailyReport.dto.TeamDto;
 import az.crocusoft.CrocusoftDailyReport.dto.UserDto;
@@ -8,7 +9,6 @@ import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.RefreshTokenResponse;
-import az.crocusoft.CrocusoftDailyReport.exception.TokenNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
@@ -19,16 +19,11 @@ import az.crocusoft.CrocusoftDailyReport.model.enums.TokenType;
 import az.crocusoft.CrocusoftDailyReport.repository.TeamRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.TokenRepository;
 import az.crocusoft.CrocusoftDailyReport.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +32,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

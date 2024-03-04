@@ -1,6 +1,7 @@
 package az.crocusoft.CrocusoftDailyReport.repository;
 import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 
+import az.crocusoft.CrocusoftDailyReport.model.enums.RoleEnum;
 import az.crocusoft.CrocusoftDailyReport.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,9 +49,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
   UserEntity findByOtp(String otp);
 
   UserEntity findByEmailAndIsDeletedAndStatus(String email,Boolean isDeleted,Status status);
+  List<UserEntity> findAllByRoleEnumAndIsDeletedAndStatus(RoleEnum roleEnum,Boolean isDeleted,Status status);
 
   Optional<UserEntity> findByIdAndIsDeletedAndStatus(Long id,Boolean isDeleted,Status status);
 
   List<UserEntity> findAllByIsDeleted(boolean deleted);
 
+    boolean existsByRoleEnum(RoleEnum roleEnum);
 }
