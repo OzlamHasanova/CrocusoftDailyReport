@@ -213,7 +213,7 @@ public class UserService {
                     .userId(userEntity.getId())
                     .name(userEntity.getName())
                     .surname(userEntity.getSurname())
-                           
+
                     .email(userEntity.getEmail())
                     .role(userEntity.getRole().getRoleEnum().name())
                     .status(userEntity.getStatus().name());
