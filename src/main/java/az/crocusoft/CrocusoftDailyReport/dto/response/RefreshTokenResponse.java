@@ -9,6 +9,6 @@ import lombok.Data;
 public class RefreshTokenResponse {
     @JsonProperty("user_id")
     private Long id;
-    @JsonProperty("refresh_token")
-    private String refreshToken;
+    @JsonProperty("access_token")
+    private String accessToken;
 }

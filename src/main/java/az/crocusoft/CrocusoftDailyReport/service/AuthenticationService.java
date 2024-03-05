@@ -144,7 +144,7 @@ public RefreshTokenResponse refreshToken(String refreshToken) {
             saveUserToken(user, accessToken);
             return RefreshTokenResponse.builder()
                     .id(user.getId())
-                    .refreshToken(refreshToken)
+                    .accessToken(accessToken)
                     .build();
         }
     }
