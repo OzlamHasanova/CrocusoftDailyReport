@@ -38,6 +38,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.relation.RoleNotFoundException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,7 +82,8 @@ public class UserService {
         user.setSurname(userRequest.getSurname());
         user.setEmail(userRequest.getEmail());
         user.setTeam(teamRepository.findById(userRequest.getTeamId()).orElse(null));
-        user.setRole(roleRepository.findById(userRequest.getRoleId()).orElseThrow());
+        user.setRole(roleRepository.findById(userRequest.getRoleId()).get());
+        user.setRoleEnum(roleRepository.findById(userRequest.getRoleId()).get().getRoleEnum());
 
         UserEntity updatedUser = userRepository.save(user);
         UserDto userDto = authenticationService.convertToDto(updatedUser);
