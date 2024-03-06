@@ -53,7 +53,7 @@ public class ReportService {
 
     public DailyReportResponse createReport(ReportRequestForCreate reportdto) {
         logger.info("Creating report");
-
+        UserEntity user=authenticationService.getSignedInUser();
         DailyReport report = new DailyReport();
         report.setUser(authenticationService.getSignedInUser());
         report.setDescription(reportdto.getDescription());

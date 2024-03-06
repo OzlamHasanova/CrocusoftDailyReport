@@ -16,5 +16,11 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     @Query("SELECT p FROM Project p WHERE (:projectName IS NULL OR LOWER(p.name) LIKE %:projectName%) ORDER BY p.createDate DESC")
     Page<Project> findByNameContainingIgnoreCaseOrderByCreationDateDesc(@Param("projectName") String projectName,
                                                                         Pageable pageable);
+
+    @Query("SELECT p FROM Project p JOIN p.users u WHERE (:projectName IS NULL OR LOWER(p.name) LIKE %:projectName%) AND (:userId IS NULL OR u.id = :userId) ORDER BY p.createDate DESC")
+    Page<Project> findByNameContainingIgnoreCaseAndUserIdOrderByCreationDateDesc(@Param("projectName") String projectName,
+                                                                                 @Param("userId") Long userId,
+                                                                                 Pageable pageable);
+
     boolean existsProjectByName(String name);
 }

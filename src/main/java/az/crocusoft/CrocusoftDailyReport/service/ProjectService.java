@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     public ProjectResponse getById(Long id) {
@@ -137,6 +138,20 @@ public class ProjectService {
     public ProjectResponseForSearch filterProjectsByName(String projectName, int page, int pageSize) throws ProjectNotFoundException {
         Page<Project> projects;
         Pageable pageable = PageRequest.of(page-1, pageSize, Sort.by("createDate").descending());
+        UserEntity user= authenticationService.getSignedInUser();
+        if (user.getRoleEnum() == RoleEnum.EMPLOYEE) {
+             projects=projectRepository.findByNameContainingIgnoreCaseAndUserIdOrderByCreationDateDesc(projectName,user.getId(),pageable);
+            List<ProjectResponseForFilter> filteredProjectResponses = projects.stream()
+                    .map(project -> new ProjectResponseForFilter(project.getId(), project.getName(), convertUserEntitiesToResponses(project.getUsers())))
+                    .collect(Collectors.toList());
+
+            if (filteredProjectResponses.isEmpty()) {
+                logger.warn("Project not found with name: {}", projectName);
+                throw new ProjectNotFoundException("Project not found");
+            }
+            return new ProjectResponseForSearch(filteredProjectResponses, projects.getTotalPages(), projects.getTotalElements(),projects.hasNext());
+
+        }
 
         if (projectName == null) {
             projects = projectRepository.findAll(pageable);

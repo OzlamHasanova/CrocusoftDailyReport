@@ -64,7 +64,7 @@ public class UserService {
     public UserDto update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
 
-        UserEntity user = userRepository.findById(id)
+        UserEntity user = userRepository.findByIdAndIsDeletedAndStatus(id,false,Status.ACTIVE)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         if(userRepository.existsByIdAndNameAndSurnameAndEmailAndTeamIdAndRoleEnum(id,userRequest.getName(), userRequest.getSurname(), userRequest.getEmail(), userRequest.getTeamId(), roleRepository.findById(userRequest.getRoleId()).get().getRoleEnum()
         )){
