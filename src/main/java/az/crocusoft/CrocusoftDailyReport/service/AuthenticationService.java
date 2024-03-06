@@ -9,6 +9,7 @@ import az.crocusoft.CrocusoftDailyReport.dto.request.RegisterRequest;
 import az.crocusoft.CrocusoftDailyReport.dto.response.AuthenticationResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.RefreshTokenResponse;
+import az.crocusoft.CrocusoftDailyReport.exception.EmailAlreadyExistException;
 import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
@@ -50,6 +51,9 @@ public class AuthenticationService {
 
     public ResponseEntity<BaseResponse> register(RegisterRequest request) {
         String role = getSignedInUser().getRole().getRoleEnum().name();
+        if(!isValidEmailDomain(request.getEmail())){
+            throw new EmailAlreadyExistException("Email must be from crocusoft domain");
+        }
         if (!role.equals("SUPERADMIN") && !role.equals("ADMIN")) {
             logger.warn("Unauthorized registration attempt by user: {}", getSignedInUser().getEmail());
             return new ResponseEntity<>(new BaseResponse("Only superadmin or admin can register users!"), HttpStatus.UNAUTHORIZED);
@@ -82,6 +86,9 @@ public class AuthenticationService {
 
         logger.info("User registered successfully: {}", user.getEmail());
         return new ResponseEntity<>(new BaseResponse("Register is successful"), HttpStatus.CREATED);
+    }
+    private boolean isValidEmailDomain(String email) {
+        return email.endsWith("@crocusoft.com");
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
