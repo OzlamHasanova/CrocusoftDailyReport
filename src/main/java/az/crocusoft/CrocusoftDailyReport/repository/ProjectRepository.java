@@ -1,6 +1,7 @@
 package az.crocusoft.CrocusoftDailyReport.repository;
 
 import az.crocusoft.CrocusoftDailyReport.model.Project;
+import az.crocusoft.CrocusoftDailyReport.model.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,6 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
     Page<Project> findByNameContainingIgnoreCaseAndUserIdOrderByCreationDateDesc(@Param("projectName") String projectName,
                                                                                  @Param("userId") Long userId,
                                                                                  Pageable pageable);
-
+//    boolean existsByNameAndUsersContains(String projectName, UserEntity user);
     boolean existsProjectByName(String name);
 }

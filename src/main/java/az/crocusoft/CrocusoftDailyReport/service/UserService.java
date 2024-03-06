@@ -228,7 +228,7 @@ public class UserService {
         if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
                 (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
                 (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
-            throw new UnsupportedOperationException("You cannot change this user's status");
+            throw new UnsupportedOperationException("You cannot view this user");
         }
 
         UserDto userDto = authenticationService.convertToDto(user);
