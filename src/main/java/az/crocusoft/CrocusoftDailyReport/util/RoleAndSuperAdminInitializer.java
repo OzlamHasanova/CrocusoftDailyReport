@@ -88,37 +88,6 @@ public class RoleAndSuperAdminInitializer implements CommandLineRunner {
         isRoleDataInitialized=true;
     }
 }
-//        if (roleRepository.count() == 0) {
-//            isRoleDataInitialized = true;
-//        }
-//
-//        if (isRoleDataInitialized) {
-//            for (RoleEnum roleName : RoleEnum.values()) {
-//                if (!roleRepository.existsByRoleEnum(roleName)) {
-//                    Role role = new Role();
-//                    role.setRoleEnum(roleName);
-//                    roleRepository.save(role);
-//                }
-//            }
-//        }
-//
-//        if (isRoleDataInitialized) {
-//            Role role = roleRepository.findById(1)
-//                    .orElseThrow(() -> new RuntimeException("Role not found."));
-//            role = entityManager.merge(role);
-//
-//
-//            UserEntity superAdmin = UserEntity.builder()
-//                    .email("admin")
-//                    .password(passwordEncoder.encode("superadminpassword"))
-//                    .status(Status.ACTIVE)
-//                    .isDeleted(false)
-//                    .role(role)
-//                    .roleEnum(RoleEnum.SUPERADMIN)
-//                    .build();
-//
-//            userRepository.save(superAdmin);
-//        }
     }
 
 }

@@ -65,7 +65,10 @@ public class UserService {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-
+        if(userRepository.existsByIdAndNameAndSurnameAndEmailAndTeamIdAndRoleEnum(id,userRequest.getName(), userRequest.getSurname(), userRequest.getEmail(), userRequest.getTeamId(), roleRepository.findById(userRequest.getRoleId()).get().getRoleEnum()
+        )){
+            throw new EmailAlreadyExistException("There is no change");
+        }
         if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
                 (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
                 (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
