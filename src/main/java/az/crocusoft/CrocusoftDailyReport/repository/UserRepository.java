@@ -45,7 +45,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             @Param("projectIds") List<Long> projectIds,
             @Param("userId") Long userId,
             Pageable pageable);
-  UserEntity findByEmail(String email);
+  Optional<UserEntity> findByEmail(String email);
   UserEntity findByOtp(String otp);
 
   UserEntity findByEmailAndIsDeletedAndStatus(String email,Boolean isDeleted,Status status);

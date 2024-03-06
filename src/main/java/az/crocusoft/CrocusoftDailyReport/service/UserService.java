@@ -11,9 +11,8 @@ import az.crocusoft.CrocusoftDailyReport.dto.response.ProjectDtoForGetApi;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserFilterResponse;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForFilter;
 import az.crocusoft.CrocusoftDailyReport.dto.response.UserResponseForGetAll;
-import az.crocusoft.CrocusoftDailyReport.exception.PasswordChangeIsFalse;
+import az.crocusoft.CrocusoftDailyReport.exception.*;
 import az.crocusoft.CrocusoftDailyReport.exception.UnsupportedOperationException;
-import az.crocusoft.CrocusoftDailyReport.exception.UserNotFoundException;
 import az.crocusoft.CrocusoftDailyReport.model.Project;
 import az.crocusoft.CrocusoftDailyReport.model.Role;
 import az.crocusoft.CrocusoftDailyReport.model.Team;
@@ -55,6 +54,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final TeamRepository teamRepository;
     private final EmailUtil emailUtil;
     private final OtpUtil otpUtil;
     private final AuthenticationService authenticationService;
@@ -63,10 +63,21 @@ public class UserService {
     public UserDto update(Long id, UserRequest userRequest) {
         logger.info("Updating user with id: {}", id);
 
-        UserEntity user = userRepository.findById(id).orElseThrow();
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
+        if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
+            throw new UnsupportedOperationException("You cannot update this user");
+        }
+        if (userRepository.existsByEmail(userRequest.getEmail())){
+            throw new EmailAlreadyExistException("This email is being used by another user");
+        }
         user.setName(userRequest.getName());
         user.setSurname(userRequest.getSurname());
         user.setEmail(userRequest.getEmail());
+        user.setTeam(teamRepository.findById(userRequest.getTeamId()).orElse(null));
         user.setRole(roleRepository.findById(userRequest.getRoleId()).orElseThrow());
 
         UserEntity updatedUser = userRepository.save(user);
@@ -81,7 +92,10 @@ public class UserService {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-        if(user.getRoleEnum().name().equals("SUPERADMIN")||user.getRoleEnum().name().equals("HEAD")){
+
+        if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
             throw new UnsupportedOperationException("You cannot delete this user");
         }
         user.setIsDeleted(true);
@@ -92,10 +106,12 @@ public class UserService {
 
     public void updateUserPassword(Long userId, String password) {
         logger.info("Updating password for user with id: {}", userId);
-
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-
+        if(user.getRoleEnum().equals(RoleEnum.HEAD)||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN))||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){            throw new UnsupportedOperationException("You cannot change this user's password");
+        }
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
 
@@ -107,7 +123,11 @@ public class UserService {
 
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-
+        if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
+            throw new UnsupportedOperationException("You cannot change this user's status");
+        }
         user.setStatus(status);
         userRepository.save(user);
 
@@ -142,8 +162,8 @@ public class UserService {
     }
 
     public BaseResponse regenerateOtp(String email) {
-        UserEntity user = userRepository.findByEmail(email);
-               // .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with this email: " + email));
         String otp = otpUtil.generateOtp();
 
         try {
@@ -178,6 +198,9 @@ public class UserService {
 
     public BaseResponse verifyOtp(String otp) {
         UserEntity user=userRepository.findByOtp(otp);
+        if(user==null){
+            throw new OtpIsFalseOrNullException("OTP is null or false, please regenerate otp and try again");
+        }
         if (Objects.equals(user.getOtp(), otp) && Duration.between(user.getOtpGeneratedTime(),
                 LocalDateTime.now()).getSeconds() < (5 * 60)) {
             user.setStatus(Status.ACTIVE);
@@ -194,16 +217,18 @@ public class UserService {
 
         logger.info("Getting user by id: {}", userId);
 
-        Optional<UserEntity> user = userRepository.findById(userId);
-        UserEntity userEntity = user.orElse(null);
-        if (userEntity != null) {
-            UserDto userDto = authenticationService.convertToDto(userEntity);
-            logger.info("User retrieved successfully");
-            return userDto;
-        } else {
-            logger.warn("User not found with id: {}", userId);
-            return null;
+       UserEntity user = userRepository.findById(userId)
+               .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if(user.getRoleEnum().equals(RoleEnum.HEAD) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.SUPERADMIN)) ||
+                (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
+            throw new UnsupportedOperationException("You cannot change this user's status");
         }
+
+        UserDto userDto = authenticationService.convertToDto(user);
+        logger.info("User retrieved successfully");
+        return userDto;
     }
 
     public List<UserResponseForGetAll> convertToDtoList(List<UserEntity> userEntityList) {

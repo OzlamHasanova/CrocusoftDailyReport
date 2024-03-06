@@ -60,6 +60,10 @@ public class TeamService {
 
         Team existingTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new UpdateTimeException("Team not found with id: " + teamId));
+        boolean existSameNameTeam=teamRepository.existsTeamByName(teamRequest.getTeamName());
+        if(existSameNameTeam){
+            throw new TeamAlreadyExistException("Team already created with the same name");
+        }
         existingTeam.setName(teamRequest.getTeamName());
         teamRepository.save(existingTeam);
 
@@ -116,6 +120,7 @@ public class TeamService {
 
     public TeamResponse mapToTeamResponse(Team team) {
         TeamResponse response = new TeamResponse();
+        response.setTeamId(team.getId());
         response.setName(team.getName());
 
         List<TeamMemberDto> memberDtos = new ArrayList<>();

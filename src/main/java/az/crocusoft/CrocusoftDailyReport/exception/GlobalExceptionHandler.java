@@ -114,7 +114,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleProjectAlreadyExistException(TokenNotFoundException ex) {
+    public ResponseEntity<ExceptionResponse> handleTokenNotFoundException(TokenNotFoundException ex) {
         ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity<ExceptionResponse> handleProjectAlreadyExistException(UnsupportedOperationException ex) {
+    public ResponseEntity<ExceptionResponse> handleUnsupportedOperationException(UnsupportedOperationException ex) {
         ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_ACCEPTABLE.value(),
@@ -132,5 +132,25 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(response, HttpStatus.NOT_ACCEPTABLE);
+    }
+    @ExceptionHandler(EmailAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleEmailAlreadyExistException(EmailAlreadyExistException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(OtpIsFalseOrNullException.class)
+    public ResponseEntity<ExceptionResponse> handleOtpIsFalseOrNullException(OtpIsFalseOrNullException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND,
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

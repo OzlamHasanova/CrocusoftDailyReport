@@ -137,7 +137,7 @@ public class AuthenticationService {
 public RefreshTokenResponse refreshToken(String refreshToken) {
     String mail = jwtService.extractUsername(refreshToken);
     if (mail != null) {
-        var user = repository.findByEmail(mail);
+        var user = repository.findByEmail(mail).get();
         if (jwtService.isTokenValid(refreshToken, user)) {
             var accessToken = jwtService.generateToken(user);
             revokeAllUserTokens(user);
