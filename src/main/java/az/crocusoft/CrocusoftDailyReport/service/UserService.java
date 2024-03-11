@@ -75,7 +75,7 @@ public class UserService {
                 (authenticationService.getSignedInUser().getRoleEnum().equals(RoleEnum.ADMIN)&&user.getRoleEnum().equals(RoleEnum.ADMIN))){
             throw new UnsupportedOperationException("You cannot update this user");
         }
-        if (userRepository.existsByEmail(userRequest.getEmail())&& (!userRepository.findById(id).equals(userRepository.findByEmail(userRequest.getEmail())))){
+        if (userRepository.existsByEmail(userRequest.getEmail())&& !(userRepository.findById(id).equals(userRepository.findByEmail(userRequest.getEmail())))){
             throw new EmailAlreadyExistException("This email is being used by another user");
         }
         user.setName(userRequest.getName());
