@@ -15,6 +15,7 @@ public class DailyReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
+    @Column(columnDefinition = "text")
     private String description;
     @Column(name = "report_date")
     private LocalDate createDate;

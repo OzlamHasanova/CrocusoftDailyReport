@@ -2,7 +2,6 @@ package az.crocusoft.CrocusoftDailyReport.service;
 
 
 import az.crocusoft.CrocusoftDailyReport.constant.PaginationConstants;
-import az.crocusoft.CrocusoftDailyReport.dto.ReportDto;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportFilterResponseWithPaginationForAdmin;
 import az.crocusoft.CrocusoftDailyReport.dto.ReportUpdateDto;
 import az.crocusoft.CrocusoftDailyReport.dto.request.ReportRequestForCreate;
@@ -22,14 +21,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -149,7 +149,7 @@ public class ReportService {
     private DailyReportFilterAdminResponse mapToAdminResponse(DailyReport dailyReport) {
         DailyReportFilterAdminResponse response = new DailyReportFilterAdminResponse();
         response.setId(dailyReport.getId());
-        response.setDescription(dailyReport.getDescription());
+        response.setDescription(parseHtmlAndExtractText(dailyReport.getDescription()));
         response.setUser(mapToUserResponse(dailyReport.getUser()));
         response.setProject(mapToProjectDto(dailyReport.getProject()));
         response.setCreatDate(dailyReport.getCreateDate());
@@ -158,7 +158,7 @@ public class ReportService {
     private ReportFilterResponseForUser mapToUserResponse(DailyReport dailyReport) {
         ReportFilterResponseForUser response = new ReportFilterResponseForUser();
         response.setId(dailyReport.getId());
-        response.setDescription(dailyReport.getDescription());
+        response.setDescription(parseHtmlAndExtractText(dailyReport.getDescription()));
         response.setProject(mapToProjectDto(dailyReport.getProject()));
         response.setCreatDate(dailyReport.getCreateDate());
         return response;
@@ -227,7 +227,7 @@ public class ReportService {
             dataRow.createCell(2).setCellValue(report.getUser().getName());
             dataRow.createCell(3).setCellValue(report.getUser().getSurname());
             dataRow.createCell(4).setCellValue(report.getCreateDate());
-            dataRow.createCell(5).setCellValue(report.getDescription());
+            dataRow.createCell(5).setCellValue(parseHtmlAndExtractText(report.getDescription()));
             dataRow.createCell(6).setCellValue(report.getProject().getName());
 
             dataRowIndex++;
@@ -242,5 +242,14 @@ public class ReportService {
                 .map(this::mapToAdminResponse)
                 .collect(Collectors.toList());
         return new ReportFilterResponseWithPaginationForAdmin(responseList, reports.getTotalPages(), reports.getTotalElements(),reports.hasNext());
+    }
+    private String parseHtmlAndExtractText(String html) {
+        Document doc = Jsoup.parse(html);
+        Elements paragraphs = doc.select("p");
+        StringBuilder textBuilder = new StringBuilder();
+        for (Element paragraph : paragraphs) {
+            textBuilder.append(paragraph.text());
+        }
+        return textBuilder.toString();
     }
 }
