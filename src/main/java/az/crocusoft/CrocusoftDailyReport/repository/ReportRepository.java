@@ -38,4 +38,5 @@ public interface ReportRepository extends JpaRepository<DailyReport,Long> {
             @Param("userId") Long userId,
             Pageable pageable
     );
+
 }

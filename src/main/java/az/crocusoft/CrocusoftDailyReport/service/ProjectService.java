@@ -90,7 +90,9 @@ public class ProjectService {
         Project savedProject = projectRepository.save(project);
 
         List<UserResponse> employeeResponses = savedProject.getUsers().stream()
-                .map(user -> new UserResponse(user.getId(),user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(user.getId(),user.getName(), user.getSurname(),Optional.ofNullable(user.getTeam())
+                        .map(team -> team.getName())
+                        .orElse(null)))
                 .collect(Collectors.toList());
 
         logger.info("Created project with name: {}", savedProject.getName());
@@ -103,6 +105,13 @@ public class ProjectService {
                     logger.warn("Project not found with id: {}", id);
                     return new ProjectNotFoundException("Project not found with id: " + id);
                 });
+
+            boolean existSameNameProject=projectRepository.existsProjectByName(projectDto.getName());
+            boolean existSameNameAndSameId=projectRepository.existsByIdAndName(id,projectDto.getName());
+            if(existSameNameProject && !existSameNameAndSameId){
+                throw new ProjectAlreadyExistException("Project already created with the same name");
+            }
+
 
         existingProject.setName(projectDto.getName());
 
@@ -128,9 +137,15 @@ public class ProjectService {
         Project savedProject = projectRepository.save(existingProject);
 
         List<UserResponse> employeeResponses = savedProject.getUsers().stream()
-                .map(user -> new UserResponse(user.getId(), user.getName(), user.getSurname(), user.getTeam().getName()))
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getSurname(),
+                        Optional.ofNullable(user.getTeam())
+                                .map(team -> team.getName())
+                                .orElse(null)
+                ))
                 .collect(Collectors.toList());
-
         logger.info("Updated project with id: {}", id);
         return new ProjectResponse(savedProject.getName(), employeeResponses);
     }

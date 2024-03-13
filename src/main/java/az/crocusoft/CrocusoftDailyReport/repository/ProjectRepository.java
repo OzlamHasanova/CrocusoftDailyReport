@@ -24,4 +24,6 @@ public interface ProjectRepository extends JpaRepository<Project,Long> {
                                                                                  Pageable pageable);
 //    boolean existsByNameAndUsersContains(String projectName, UserEntity user);
     boolean existsProjectByName(String name);
+    boolean existsByIdAndName(Long id,String name);
+
 }
