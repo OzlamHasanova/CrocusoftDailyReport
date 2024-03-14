@@ -55,6 +55,9 @@ public class ReportController {
             @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
+        if (size == 0) {
+            size = Integer.MAX_VALUE;
+        }
         return ResponseEntity.ok(reportService.filterDailyReports( startDate,endDate, projectIds,  page, size));
     }
 
@@ -67,6 +70,9 @@ public class ReportController {
             @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) {
+        if (size == 0) {
+            size = Integer.MAX_VALUE;
+        }
         return ResponseEntity.ok(reportService.filterDailyReportsForAdmin( startDate,endDate, projectIds,userIds, page, size));
     }
     @GetMapping("/filter-and-export-excel")
@@ -79,6 +85,9 @@ public class ReportController {
             @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
             @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
     ) throws IOException {
+        if (size == 0) {
+            size = Integer.MAX_VALUE;
+        }
 
         response.setContentType("application/octet-stream");
         String headerKey="Content-Disposition";

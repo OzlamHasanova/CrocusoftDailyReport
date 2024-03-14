@@ -43,6 +43,9 @@ public class ProjectController {
     public ResponseEntity<ProjectResponseForSearch> filterProjectsByName(@RequestParam(value = "projectName", required = false) String projectName,
                                                                          @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
                                                                          @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size) {
+        if (size == 0) {
+            size = Integer.MAX_VALUE;
+        }
         return ResponseEntity.ok(projectService.filterProjectsByName(projectName,page,size));
     }
 

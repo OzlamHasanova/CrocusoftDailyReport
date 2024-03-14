@@ -58,6 +58,9 @@ public class UserController {
                                                           @RequestParam(name = "page", defaultValue = PaginationConstants.PAGE_NUMBER) Integer page,
                                                           @RequestParam(name = "pageSize", defaultValue = PaginationConstants.PAGE_SIZE) Integer size
                                                                    ) {
+        if (size == 0) {
+            size = Integer.MAX_VALUE;
+        }
         return ResponseEntity.ok(userService.filterUsers(firstName, surname,teamIds, projectIds,page,size));
     }
     @DeleteMapping("/{id}")
