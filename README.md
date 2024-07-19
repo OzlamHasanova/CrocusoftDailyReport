@@ -23,7 +23,7 @@ Welcome to the Daily Report project! This project showcases my journey and exper
 - **Jsoup**: Library for parsing HTML and extracting data
 - **Hibernate**: ORM framework for database interactions
 - **Maven**: Build automation tool
-- **MySQL/PostgreSQL**: Relational database management systems
+- **MySQL**: Relational database management systems
 
 
 ## License
@@ -35,7 +35,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 For any inquiries or questions, feel free to contact me at:
 
 - Email: ozlamhasanova@gmail.com
-- LinkedIn: https://www.linkedin.com/in/%C3%B6zl%C9%9902h%C9%99s%C9%99nova-27a18b1b3/
+- LinkedIn: linkedin.com/in/özlə02həsənova-27a18b1b3
 
 Thank you for checking out the Daily Report project! I am excited to share my work and look forward to any feedback or contributions.
 
